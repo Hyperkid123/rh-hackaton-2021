@@ -65,6 +65,17 @@ class World {
     ]);
     this.scene.background = texture;
 
+    const plane = new Three.Mesh(
+      new Three.PlaneGeometry(100, 100, 1, 1),
+      new Three.MeshStandardMaterial({
+        color: 0xFFFFFF
+      })
+    )
+    plane.castShadow = false;
+    plane.receiveShadow = true;
+    plane.rotation.x = -Math.PI / 2
+    this.scene.add(plane)
+
     this.raf()
   }
 
