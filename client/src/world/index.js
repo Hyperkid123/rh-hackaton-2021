@@ -2,6 +2,7 @@ import * as Three from 'three';
 
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import '../controls/OrbitControls';
+import RangeMesh from '../movement/calculate-ragne';
 
 const FOW = 60;
 const ASPECT = 1920 / 1080;
@@ -24,13 +25,14 @@ class World {
     this.ringMesh.rotateX(Three.MathUtils.degToRad(90))
     this.ringMesh.visible = false;
     this.selectedMinionId = null;
+    this.rangeMesh = new RangeMesh()
 
     this.init(({world}))
   }
 
   loadUser(user) {
-    user.army.forEach(({position: {x, z}, id}) => {
-      this.loadModel(x * 10 , z * 10, user.startingPosition === 'left', id)
+    user.army.forEach(({position: {x, z}, attributes, id}) => {
+      this.loadModel(x * 10 , z * 10, user.startingPosition === 'left', id, attributes)
     })
   }
 
@@ -42,12 +44,13 @@ class World {
           const {position: {x, z} } = rest
           this.ringMesh.visible = true;
           this.ringMesh.position.set(x * 10, this.ringMesh.position.y, z * 10)
+          this.rangeMesh.showRange(model.attributes.speed, { x, z })
         }
       }
     }))
   }
 
-  loadModel(x, z, isLeft, id) {
+  loadModel(x, z, isLeft, id, attributes) {
     let mixer
     const loader = new FBXLoader();
     loader.load('/build/assets/models/dummy/xbot.fbx', (object) => {
@@ -65,7 +68,10 @@ class World {
           }
         })
       })
-      soldiers[id] = object
+      soldiers[id] = {
+        attributes,
+        object,
+      }
       this.scene.add(object)
     })
   }
@@ -159,11 +165,13 @@ class World {
         cube.position.set(x * 10, 0, y * 10)
         cube.castShadow = false;
         cube.receiveShadow = true;
+        cube.userData.isDesk = true
         this.scene.add( cube );
       })
     })
 
     this.scene.add(this.ringMesh)
+    this.scene.add(this.rangeMesh.getMesh())
     this.raf()
   }
 
@@ -187,10 +195,11 @@ class World {
     const intersects = this.raycaster.intersectObjects( this.scene.children );
 
     if ( intersects.length > 0 ) {
-      if ( this.INTERSECTED != intersects[ 0 ].object ) {
+      const tile = intersects.find(({ object } = {}) => object?.userData?.isDesk === true)
+      if ( this.INTERSECTED != tile?.object ) {
         if ( this.INTERSECTED  ) this.INTERSECTED.material.emissive.setHex( this.INTERSECTED.currentHex );
-        if(intersects[ 0 ].object?.material?.emissive?.getHex) {
-          this.INTERSECTED = intersects[ 0 ].object;  
+        if(tile) {
+          this.INTERSECTED = tile.object;  
           this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
           this.INTERSECTED.material.emissive.setHex( 0xff0000 );
         }

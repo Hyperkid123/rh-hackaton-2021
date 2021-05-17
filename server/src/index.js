@@ -13,6 +13,9 @@ let army1 = new Array(1).fill().map((_, index) => ({
     x: index,
     z: 19
   },
+  attributes: {
+    speed: 5
+  },
   isSelected: false
 }))
 let army2 = new Array(1).fill().map((_, index) => ({
@@ -20,6 +23,9 @@ let army2 = new Array(1).fill().map((_, index) => ({
   position: {
     x: index,
     z: 0
+  },
+  attributes: {
+    speed: 5
   },
   isSelected: false
 }))
