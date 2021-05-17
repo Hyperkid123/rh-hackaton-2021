@@ -5,9 +5,26 @@ import { Server } from 'socket.io';
 const PORT = 3000;
 const app = express();
 
-const users = []
+let users = []
 
-const world = new Array(10).fill().map( () =>
+let army1 = new Array(1).fill().map((_, index) => ({
+  id: `army-1-${index}`,
+  position: {
+    x: index,
+    z: 19
+  },
+  isSelected: false
+}))
+let army2 = new Array(1).fill().map((_, index) => ({
+  id: `army-2-${index}`,
+  position: {
+    x: index,
+    z: 0
+  },
+  isSelected: false
+}))
+
+const worldData = new Array(10).fill().map( () =>
 	new Array(20).fill().map(() => ({
      type: Math.random() > 0.25 ? 'grass' : 'sand'
   }))
@@ -30,9 +47,33 @@ io.on('connection', (socket) => {
     userID: socket.id,
     playerName: socket.playerName
   }
-  socket.emit('connected', {currentPlayer, otherPlayers: users, world})
-  socket.broadcast.emit('new-player', currentPlayer)
-  users.push(currentPlayer)
+
+  if(users.length < 20) {
+    currentPlayer.army = users.length === 0 ? army1 : army2;
+    currentPlayer.startingPosition = users.length === 0 ? 'left' : 'right';
+    console.log(currentPlayer)
+    socket.emit('connected', {currentPlayer, otherPlayers: users, worldData})
+    socket.broadcast.emit('new-player', currentPlayer)
+    users.push(currentPlayer)
+  } else {
+    socket.broadcast.emit('new-observer', currentPlayer)
+  }
+
+  socket.on('error', (err) => {
+    console.log('err', err)
+  } )
+
+  socket.on('select-tile', ({x, z}) => {
+    users = users.map((user) => ({
+      ...user,
+      army: user.army.map(piece => ({
+        ...piece,
+        isSelected: piece.position.x === x && piece.position.z === z
+      }))
+    }))
+    socket.emit('update-users', users)
+    socket.broadcast.emit('update-users', users)
+  })
 })
 
 io.use((socket, next) => {

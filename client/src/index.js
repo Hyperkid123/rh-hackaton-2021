@@ -3,7 +3,6 @@ import User from './user';
 import World from './world';
 
 let world;
-let worldData;
 const users = [];
 let localUser;
 
@@ -22,38 +21,38 @@ socket.on("connect_error", (err) => {
   }
 });
 
+const emitSelect = (x, z) => {
+  socket.emit('select-tile', {x, z})
+}
+
+socket.on('update-users', (users) => {
+  world.updateUsers(users)
+})
+
 socket.on('connected', ({
-  currentPlayer: {
-    userID,
-    playerName
-  },
+  currentPlayer,
   otherPlayers,
-  world
+  worldData
 }) => {
-  worldData = world;
-  world = new World({ world });
-  localUser = new User(userID, playerName, true)
-  console.log('payload', localUser)
-  otherPlayers.forEach(() => {
-    world.loadModel()
+  world = new World({ world: worldData, emitSelect });
+  console.log(currentPlayer, world)
+  world.loadUser(currentPlayer)
+  otherPlayers.forEach((user) => {
+    world.loadUser(user)
   })
 })
 
-socket.on('new-player', ({
-  userID,
-  playerName
-}) => {
-  localUser = new User(userID, playerName, false)
-  console.log('external player', localUser)
-  world.loadModel()
+socket.on('new-player', (currentPlayer) => {
+  world.loadUser(currentPlayer)
 })
 
 
 const connectButton = document.getElementById('connect');
 
 const connect = () => {
-  const input = document.getElementById('player-name')
-  const value = input.value
+  // const input = document.getElementById('player-name')
+  // const value = input.value
+  const value = 'mm'
   if(!value) {
     console.error('Fill name!')
   } else {
@@ -65,5 +64,7 @@ const connect = () => {
     document.body.removeChild(form)
   }
 }
+
+connect()
 
 connectButton.onclick  = connect;

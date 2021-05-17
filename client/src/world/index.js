@@ -10,12 +10,44 @@ const FAR = 1000.0
 
 const mouse = new Three.Vector2(0, 0);
 
+const soldiers = {};
 class World {
-  constructor({world}) {
+  constructor({world, emitSelect}) {
+    this.emitSelect = emitSelect
+    this.ringSelection = new Three.RingGeometry(2, 2.5, 10)
+    this.selectionMaterial = new Three.MeshBasicMaterial(
+      { color: 0xffff00, side: Three.DoubleSide }
+    )
+    this.ringMesh = new Three.Mesh(this.ringSelection, this.selectionMaterial)
+    this.ringMesh.position.set(0,0.25,0)
+    this.ringMesh.scale.set(2,2,2)
+    this.ringMesh.rotateX(Three.MathUtils.degToRad(90))
+    this.ringMesh.visible = false;
+    this.selectedMinionId = null;
+
     this.init(({world}))
   }
 
-  loadModel() {
+  loadUser(user) {
+    user.army.forEach(({position: {x, z}, id}) => {
+      this.loadModel(x * 10 , z * 10, user.startingPosition === 'left', id)
+    })
+  }
+
+  updateUsers(users) {
+    users.forEach(({ army }) => army.forEach(({ isSelected, id, ...rest }) => {
+      const model = soldiers[id];
+      if(model) {
+        if(isSelected) {
+          const {position: {x, z} } = rest
+          this.ringMesh.visible = true;
+          this.ringMesh.position.set(x * 10, this.ringMesh.position.y, z * 10)
+        }
+      }
+    }))
+  }
+
+  loadModel(x, z, isLeft, id) {
     let mixer
     const loader = new FBXLoader();
     loader.load('/build/assets/models/dummy/xbot.fbx', (object) => {
@@ -23,8 +55,9 @@ class World {
         mixer = new Three.AnimationMixer(object)
         const action = mixer.clipAction(object.animations[0]);
         action.play()
-        object.position.set(Math.random() * 25, 0, Math.random() * 25)
+        object.position.set(x, 0, z)
         object.scale.set(0.05,0.05,0.05)
+        object.rotateY(isLeft ? 90 : 0)
         object.traverse((child) => {
           if(child.isMesch) {
             child.castShadow = true;
@@ -32,14 +65,23 @@ class World {
           }
         })
       })
+      soldiers[id] = object
       this.scene.add(object)
     })
   }
 
   onMouseMove( event ) {
-    console.log(event.clientX, event.clientY, mouse)
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+  }
+
+  onClick() {
+    if(!this.INTERSECTED) {
+      return
+    }
+    const x = this.INTERSECTED.position.x / 10
+    const y = this.INTERSECTED.position.z / 10
+    this.emitSelect(x, y)
   }
 
   init({world}) {
@@ -55,6 +97,7 @@ class World {
     }, false)
 
     document.body.addEventListener( 'mousemove', this.onMouseMove);
+    document.body.addEventListener('click', this.onClick.bind(this))
 
     this.camera = new Three.PerspectiveCamera(FOW, ASPECT, NEAR, FAR);
     this.camera.position.set(75, 20, 0);
@@ -120,17 +163,7 @@ class World {
       })
     })
 
-    /*const plane = new Three.Mesh(
-      new Three.PlaneGeometry(100, 100, 1, 1),
-      new Three.MeshStandardMaterial({
-        color: 0xFFFFFF
-      })
-    )
-    plane.castShadow = false;
-    plane.receiveShadow = true;
-    plane.rotation.x = -Math.PI / 2
-    this.scene.add(plane)*/
-
+    this.scene.add(this.ringMesh)
     this.raf()
   }
 
@@ -155,13 +188,12 @@ class World {
 
     if ( intersects.length > 0 ) {
       if ( this.INTERSECTED != intersects[ 0 ].object ) {
-        if ( this.INTERSECTED ) this.INTERSECTED.material.emissive.setHex( this.INTERSECTED.currentHex );
-        this.INTERSECTED = intersects[ 0 ].object;
-
-        console.log(this.INTERSECTED)
-
-        this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
-        this.INTERSECTED.material.emissive.setHex( 0xff0000 );
+        if ( this.INTERSECTED  ) this.INTERSECTED.material.emissive.setHex( this.INTERSECTED.currentHex );
+        if(intersects[ 0 ].object?.material?.emissive?.getHex) {
+          this.INTERSECTED = intersects[ 0 ].object;  
+          this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
+          this.INTERSECTED.material.emissive.setHex( 0xff0000 );
+        }
       }
     } else {
       if ( this.INTERSECTED ) this.INTERSECTED.material.emissive.setHex( this.INTERSECTED.currentHex );
