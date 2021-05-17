@@ -1,4 +1,5 @@
 import * as Three from 'three';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import '../controls/OrbitControls';
 
 const FOW = 60;
@@ -9,6 +10,27 @@ const FAR = 1000.0
 class World {
   constructor() {
     this.init()
+  }
+
+  loadModel() {
+    let mixer
+    const loader = new FBXLoader();
+    loader.load('/build/assets/models/dummy/xbot.fbx', (object) => {
+      object.traverse((child) => {
+        mixer = new Three.AnimationMixer(object)
+        const action = mixer.clipAction(object.animations[0]);
+        action.play()
+        object.position.set(0, 0, 0)
+        object.scale.set(0.05,0.05,0.05)
+        object.traverse((child) => {
+          if(child.isMesch) {
+            child.castShadow = true;
+            child.receiveShadow = true
+          }
+        })
+      })
+      this.scene.add(object)
+    })
   }
 
   init() {
@@ -76,6 +98,8 @@ class World {
     plane.rotation.x = -Math.PI / 2
     this.scene.add(plane)
 
+
+    this.loadModel()
     this.raf()
   }
 
