@@ -7,6 +7,12 @@ const app = express();
 
 const users = []
 
+const world = new Array(10).fill().map( () =>
+	new Array(20).fill().map(() => ({
+     type: Math.random() > 0.25 ? 'grass' : 'sand'
+  }))
+);
+
 const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
@@ -24,7 +30,7 @@ io.on('connection', (socket) => {
     userID: socket.id,
     playerName: socket.playerName
   }
-  socket.emit('connected', {currentPlayer, otherPlayers: users})
+  socket.emit('connected', {currentPlayer, otherPlayers: users, world})
   socket.broadcast.emit('new-player', currentPlayer)
   users.push(currentPlayer)
 })

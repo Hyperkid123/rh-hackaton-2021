@@ -1,4 +1,5 @@
 import * as Three from 'three';
+
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import '../controls/OrbitControls';
 
@@ -7,9 +8,11 @@ const ASPECT = 1920 / 1080;
 const NEAR = 1.0;
 const FAR = 1000.0
 
+const mouse = new Three.Vector2(0, 0);
+
 class World {
-  constructor() {
-    this.init()
+  constructor({world}) {
+    this.init(({world}))
   }
 
   loadModel() {
@@ -33,7 +36,13 @@ class World {
     })
   }
 
-  init() {
+  onMouseMove( event ) {
+    console.log(event.clientX, event.clientY, mouse)
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+  }
+
+  init({world}) {
     this.threejs = new Three.WebGL1Renderer();
     this.threejs.shadowMap.enabled = true;
     this.threejs.shadowMap.type = Three.PCFShadowMap;
@@ -44,6 +53,8 @@ class World {
     window.addEventListener('resize', () => {
       this.onResize()
     }, false)
+
+    document.body.addEventListener( 'mousemove', this.onMouseMove);
 
     this.camera = new Three.PerspectiveCamera(FOW, ASPECT, NEAR, FAR);
     this.camera.position.set(75, 20, 0);
@@ -76,6 +87,8 @@ class World {
     controls.target.set(0, 0, 0);
     controls.update();
 
+    this.raycaster = new Three.Raycaster();
+
     const loader = new Three.CubeTextureLoader();
     const texture = loader.load([
       '/build/assets/skybox/bluecloud_bk.jpg',
@@ -87,7 +100,27 @@ class World {
     ]);
     this.scene.background = texture;
 
-    const plane = new Three.Mesh(
+    const sandTexture = new Three.TextureLoader().load( '/build/assets/textures/sand.jpeg' )
+    const grassTexture = new Three.TextureLoader().load( '/build/assets/textures/grass.jpeg' )
+
+    const textureMapper = {
+      grass: grassTexture,
+      sand: sandTexture
+    }
+
+    world.forEach((row, x) => {
+      row.forEach((tile, y) => {
+        const geometry = new Three.BoxGeometry( 10, 0, 10 );
+        const material = new Three.MeshStandardMaterial( { map: textureMapper[tile.type]} );
+        const cube = new Three.Mesh( geometry, material );
+        cube.position.set(x * 10, 0, y * 10)
+        cube.castShadow = false;
+        cube.receiveShadow = true;
+        this.scene.add( cube );
+      })
+    })
+
+    /*const plane = new Three.Mesh(
       new Three.PlaneGeometry(100, 100, 1, 1),
       new Three.MeshStandardMaterial({
         color: 0xFFFFFF
@@ -96,7 +129,7 @@ class World {
     plane.castShadow = false;
     plane.receiveShadow = true;
     plane.rotation.x = -Math.PI / 2
-    this.scene.add(plane)
+    this.scene.add(plane)*/
 
     this.raf()
   }
@@ -109,9 +142,33 @@ class World {
 
   raf() {
     requestAnimationFrame(() => {
-      this.threejs.render(this.scene, this.camera)
+      this.render();
       this.raf()
     })
+  }
+
+  render() {
+    this.raycaster.setFromCamera( mouse, this.camera );
+
+    // calculate objects intersecting the picking ray
+    const intersects = this.raycaster.intersectObjects( this.scene.children );
+
+    if ( intersects.length > 0 ) {
+      if ( this.INTERSECTED != intersects[ 0 ].object ) {
+        if ( this.INTERSECTED ) this.INTERSECTED.material.emissive.setHex( this.INTERSECTED.currentHex );
+        this.INTERSECTED = intersects[ 0 ].object;
+
+        console.log(this.INTERSECTED)
+
+        this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
+        this.INTERSECTED.material.emissive.setHex( 0xff0000 );
+      }
+    } else {
+      if ( this.INTERSECTED ) this.INTERSECTED.material.emissive.setHex( this.INTERSECTED.currentHex );
+      this.INTERSECTED = null;
+    }
+
+    this.threejs.render(this.scene, this.camera)
   }
 }
 

@@ -3,6 +3,7 @@ import User from './user';
 import World from './world';
 
 let world;
+let worldData;
 const users = [];
 let localUser;
 
@@ -26,8 +27,11 @@ socket.on('connected', ({
     userID,
     playerName
   },
-  otherPlayers
+  otherPlayers,
+  world
 }) => {
+  worldData = world;
+  world = new World({ world });
   localUser = new User(userID, playerName, true)
   console.log('payload', localUser)
   otherPlayers.forEach(() => {
@@ -57,7 +61,6 @@ const connect = () => {
       playerName: value
     }
     socket.connect()
-    world = new World();
     const form = document.getElementById('connect-form');
     document.body.removeChild(form)
   }
