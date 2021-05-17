@@ -20,7 +20,7 @@ class World {
         mixer = new Three.AnimationMixer(object)
         const action = mixer.clipAction(object.animations[0]);
         action.play()
-        object.position.set(0, 0, 0)
+        object.position.set(Math.random() * 25, 0, Math.random() * 25)
         object.scale.set(0.05,0.05,0.05)
         object.traverse((child) => {
           if(child.isMesch) {
@@ -98,8 +98,6 @@ class World {
     plane.rotation.x = -Math.PI / 2
     this.scene.add(plane)
 
-
-    this.loadModel()
     this.raf()
   }
 

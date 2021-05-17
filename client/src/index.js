@@ -1,7 +1,10 @@
 import { io } from 'socket.io-client'
+import User from './user';
 import World from './world';
 
 let world;
+const users = [];
+let localUser;
 
 const SERVER = 'http://localhost:3000'
 const socket = io(SERVER, {
@@ -18,6 +21,29 @@ socket.on("connect_error", (err) => {
   }
 });
 
+socket.on('connected', ({
+  currentPlayer: {
+    userID,
+    playerName
+  },
+  otherPlayers
+}) => {
+  localUser = new User(userID, playerName, true)
+  console.log('payload', localUser)
+  otherPlayers.forEach(() => {
+    world.loadModel()
+  })
+})
+
+socket.on('new-player', ({
+  userID,
+  playerName
+}) => {
+  localUser = new User(userID, playerName, false)
+  console.log('external player', localUser)
+  world.loadModel()
+})
+
 
 const connectButton = document.getElementById('connect');
 
@@ -32,6 +58,8 @@ const connect = () => {
     }
     socket.connect()
     world = new World();
+    const form = document.getElementById('connect-form');
+    document.body.removeChild(form)
   }
 }
 

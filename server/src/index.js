@@ -5,6 +5,8 @@ import { Server } from 'socket.io';
 const PORT = 3000;
 const app = express();
 
+const users = []
+
 const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
@@ -18,16 +20,13 @@ app.get('/', (req, res) => {
 })
 
 io.on('connection', (socket) => {
-  const users = []
-  for (let [id, socket] of io.of("/").sockets) {
-    users.push({
-      userID: id,
-      playerName: socket.playerName
-    })
+  const currentPlayer = {
+    userID: socket.id,
+    playerName: socket.playerName
   }
-  socket.emit("players", users)
-  socket.broadcast.emit(users)
-  console.log('User connected');
+  socket.emit('connected', {currentPlayer, otherPlayers: users})
+  socket.broadcast.emit('new-player', currentPlayer)
+  users.push(currentPlayer)
 })
 
 io.use((socket, next) => {
