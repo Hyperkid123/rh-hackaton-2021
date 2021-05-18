@@ -9,6 +9,18 @@ let users = []
 
 let activeUser;
 
+function blocked({ x, z }, pieceId, users = []) {
+  let isBlocked
+  users.forEach(({ army }) => {
+    isBlocked = army.find(({ id, position }) => id !== pieceId && position.x === x && position.z === z) || isBlocked
+  })
+  return isBlocked
+}
+
+function isMine({ x, z }, myArmy) {
+  return !!myArmy.find(({position}) => position.x === x && position.z === z)
+}
+
 function distance(a, b) {
   var farthest = 0
   var dimensions = Math.max(a.length, b.length)
@@ -32,6 +44,8 @@ let army1 = new Array(1).fill().map((_, index) => ({
     z: 19
   },
   attributes: {
+    damage: 1,
+    health: 10,
     speed: 5,
     remainingSpeed: 5
   },
@@ -44,6 +58,8 @@ let army2 = new Array(1).fill().map((_, index) => ({
     z: 0
   },
   attributes: {
+    damage: 1,
+    health: 10,
     speed: 5,
     remainingSpeed: 5
   },
@@ -168,26 +184,73 @@ io.on('connection', (socket) => {
     const inRange = selected && dist && selected.attributes?.remainingSpeed >= dist;
 
     if(selected && inRange) {
-      users = users.map((user) => ({
-        ...user,
-        army: user.army.map(piece => ({
-          ...piece,
-          ...(piece.id === selected.id && {
-            position: {
-              x, z
-            },
-            attributes: {
-              ...piece.attributes,
-              remainingSpeed: piece.attributes.remainingSpeed - dist
-            },
+
+      const blockingTile = blocked({x, z}, selected.id, users)
+      const attack = !isMine({x, z}, activeUser.army)
+
+      if(blockingTile && attack) {
+        users = users.map((user) => ({
+          ...user,
+          army: user.army.map(piece => {
+            const newHealth = blockingTile.attributes.health - selected.attributes.damage;
+            return ({
+              ...piece,
+              ...(piece.id === selected.id && {
+                attributes: {
+                  ...selected.attributes,
+                  remainingSpeed: 0
+                }
+              }),
+              ...(piece.id === blockingTile.id && {
+                attributes: {
+                  ...blockingTile.attributes,
+                  health: newHealth > 0 ? newHealth : 0,
+                  isDead: newHealth < 1
+                }
+              })
+            })
           })
         }))
-      }))
-      socket.emit('update-users', users)
-      socket.broadcast.emit('update-users', users)
 
-      socket.emit('move-minion', {id: selected.id, old: selected.position, new: {x, z}})
-      socket.broadcast.emit('move-minion', {id: selected.id, old: selected.position, new: {x, z}})
+        socket.emit('update-users', users)
+        socket.broadcast.emit('update-users', users)
+
+        // socket.emit('move-minion', {id: selected.id, old: selected.position, new: selected.position})
+        // socket.broadcast.emit('move-minion', {id: selected.id, old: selected.position, new: selected.position})
+
+      } else if(!attack && blockingTile) {
+        users = users.map((user) => ({
+          ...user,
+          army: user.army.map(piece => ({
+            ...piece,
+            isSelected: piece.id === blockingTile.id
+          }))
+        }))
+
+        socket.emit('update-users', users)
+        socket.broadcast.emit('update-users', users)
+      } else {
+        users = users.map((user) => ({
+          ...user,
+          army: user.army.map(piece => ({
+            ...piece,
+            ...(piece.id === selected.id && {
+              position: {
+                x, z
+              },
+              attributes: {
+                ...piece.attributes,
+                remainingSpeed: piece.attributes.remainingSpeed - dist
+              },
+            })
+          }))
+        }))
+        socket.emit('update-users', users)
+        socket.broadcast.emit('update-users', users)
+
+        socket.emit('move-minion', {id: selected.id, old: selected.position, new: {x, z}})
+        socket.broadcast.emit('move-minion', {id: selected.id, old: selected.position, new: {x, z}})
+      }
     }
   })
 })
