@@ -111,7 +111,7 @@ class World {
     document.body.addEventListener('click', this.onClick.bind(this))
 
     this.camera = new Three.PerspectiveCamera(FOW, ASPECT, NEAR, FAR);
-    this.camera.position.set(75, 20, 0);
+    this.camera.position.set(100, 120, 100);
 
     this.scene = new Three.Scene();
 
@@ -133,19 +133,18 @@ class World {
     light = new Three.AmbientLight(0x404040);
     this.scene.add(light)
 
-
-    const controls = new Three.OrbitControls(
+    this.controls = new Three.OrbitControls(
       this.camera,
       this.threejs.domElement
     )
-    controls.target.set(0, 0, 0);
+    this.controls.target.set(50, 0, 100)
     /*
      * Forbid the camera to "go bellow the ground".
      * Math.PI/2 limits the camera angle exactly to the ground level.
      * We keep it at 2.5 which will leave the camera at a slight angle for better orientation
     */
-    controls.maxPolarAngle = Math.PI/2.5
-    controls.update();
+    this.controls.maxPolarAngle = Math.PI/2.5
+    this.controls.update();
 
     this.raycaster = new Three.Raycaster();
 
