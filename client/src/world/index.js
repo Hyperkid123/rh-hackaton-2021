@@ -8,6 +8,10 @@ const updateUi = (attribute, value) => {
   document.getElementById(attribute).textContent = value;
 }
 
+const setAttribute = (id, attribute, value) => {
+  document.getElementById(id)[attribute] = value;
+}
+
 const FOW = 60;
 const ASPECT = 1920 / 1080;
 const NEAR = 1.0;
@@ -44,18 +48,32 @@ class World {
   }
 
   updateUsers(users) {
-    users.forEach(({ army }) => army.forEach(({ isSelected, id, ...rest }) => {
+    let selected;
+
+    users.forEach((user) => {
+      const found = !selected && user.army.find(({isSelected}) => isSelected);
+      selected = found || selected;
+    });
+
+    if(selected) {
+      const { id, ...rest } = selected;
+      const {position: {x, z} } = rest
+
       const model = soldiers[id];
-      if(model) {
-        if(isSelected) {
-          const {position: {x, z} } = rest
-          updateUi('selected-position', `${x}x ${z}z`)
-          this.ringMesh.visible = true;
-          this.ringMesh.position.set(x * 10, this.ringMesh.position.y, z * 10)
-          this.rangeMesh.showRange(model.attributes.speed, { x, z })
-        }
-      }
-    }))
+      this.ringMesh.position.set(x * 10, this.ringMesh.position.y, z * 10)
+      this.selectedMinionId = id;
+      this.ringMesh.visible = true;
+      this.rangeMesh.showRange(selected.attributes.remainingSpeed, { x, z });
+      updateUi('selected-position', `${x}x ${z}z`)
+    } else {
+      this.ringMesh.visible = false;
+      this.rangeMesh.showRange(0, { x: 0, z: 0 });
+      updateUi('selected-position', 'none')
+    }
+  }
+
+  moveMinion({old, new: newPosition, id}) {
+    soldiers[id].object.position.set(newPosition.x * 10, 0, newPosition.z * 10)
   }
 
   loadModel(x, z, isLeft, id, attributes) {

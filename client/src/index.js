@@ -45,14 +45,20 @@ socket.on('update-users', (users) => {
   world.updateUsers(users)
 })
 
+socket.on('move-minion', (positions) => {
+  world.moveMinion(positions)
+})
+
 const updateActiveUser = (activeUser) => {
   console.log(activeUser)
   if(activeUser.userID === localUser.userID) {
     updateUi('current-player', `You`)
     setAttribute('end-turn', 'disabled', false)
+    setAttribute('not-my-turn', 'hidden', true)
   } else {
     setAttribute('end-turn', 'disabled', true)
     updateUi('current-player', `${activeUser.playerName} (${activeUser.userID})`)
+    setAttribute('not-my-turn', 'hidden', false)
   }
 }
 

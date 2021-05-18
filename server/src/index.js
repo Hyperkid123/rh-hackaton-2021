@@ -9,6 +9,22 @@ let users = []
 
 let activeUser;
 
+function distance(a, b) {
+  var farthest = 0
+  var dimensions = Math.max(a.length, b.length)
+  for (var i = 0; i < dimensions; i++) {
+    var distance = Math.abs((b[i] || 0) - (a[i] || 0))
+    if (distance > farthest) {
+      farthest = distance
+    }
+  }
+  return farthest
+}
+
+const calculateSpeed = (currentPosition, newPosition, speed) => {
+  return distance([currentPosition.x, currentPosition.z], [newPosition.x, newPosition.z]);
+};
+
 let army1 = new Array(1).fill().map((_, index) => ({
   id: `army-1-${index}`,
   position: {
@@ -16,7 +32,8 @@ let army1 = new Array(1).fill().map((_, index) => ({
     z: 19
   },
   attributes: {
-    speed: 5
+    speed: 5,
+    remainingSpeed: 5
   },
   isSelected: false
 }))
@@ -27,7 +44,8 @@ let army2 = new Array(1).fill().map((_, index) => ({
     z: 0
   },
   attributes: {
-    speed: 5
+    speed: 5,
+    remainingSpeed: 5
   },
   isSelected: false
 }))
@@ -75,6 +93,20 @@ io.on('connection', (socket) => {
 
     socket.emit('active-player', activeUser)
     socket.broadcast.emit('active-player', activeUser)
+
+    users = users.map((user) => ({
+      ...user,
+      army: user.army.map(piece => ({
+        ...piece,
+        attributes: {
+          ...piece.attributes,
+          remainingSpeed: piece.attributes.speed
+        },
+      }))
+    }))
+
+    socket.emit('update-users', users);
+    socket.broadcast.emit('update-users', users);
   })
 
   socket.on('error', (err) => {
@@ -97,15 +129,65 @@ io.on('connection', (socket) => {
   })
 
   socket.on('select-tile', ({x, z}) => {
-    users = users.map((user) => ({
-      ...user,
-      army: user.army.map(piece => ({
-        ...piece,
-        isSelected: piece.position.x === x && piece.position.z === z
+    let selected;
+
+    users.forEach((user) => {
+      const found = !selected && user.army.find(({isSelected}) => isSelected);
+      selected = found || selected;
+    });
+
+    const same = selected?.position.x === x && selected?.position.z === z;
+
+    // same -> unselect
+    if(same) {
+      users = users.map((user) => ({
+        ...user,
+        army: user.army.map(piece => ({
+          ...piece,
+          isSelected: false
+        }))
       }))
-    }))
-    socket.emit('update-users', users)
-    socket.broadcast.emit('update-users', users)
+      socket.emit('update-users', users)
+      socket.broadcast.emit('update-users', users)
+    }
+
+    if (!selected) {
+      users = users.map((user) => ({
+        ...user,
+        army: user.army.map(piece => ({
+          ...piece,
+          isSelected: activeUser.userID === user.userID && piece.position.x === x && piece.position.z === z
+        }))
+      }))
+      socket.emit('update-users', users)
+      socket.broadcast.emit('update-users', users)
+    }
+
+    const dist = selected && calculateSpeed(selected?.position, {x, z}, selected?.attributes?.remainingSpeed || 0);
+    const inRange = selected && dist && selected.attributes?.remainingSpeed >= dist;
+
+    if(selected && inRange) {
+      users = users.map((user) => ({
+        ...user,
+        army: user.army.map(piece => ({
+          ...piece,
+          ...(piece.id === selected.id && {
+            position: {
+              x, z
+            },
+            attributes: {
+              ...piece.attributes,
+              remainingSpeed: piece.attributes.remainingSpeed - dist
+            },
+          })
+        }))
+      }))
+      socket.emit('update-users', users)
+      socket.broadcast.emit('update-users', users)
+
+      socket.emit('move-minion', {id: selected.id, old: selected.position, new: {x, z}})
+      socket.broadcast.emit('move-minion', {id: selected.id, old: selected.position, new: {x, z}})
+    }
   })
 })
 
