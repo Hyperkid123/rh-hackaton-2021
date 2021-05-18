@@ -199,6 +199,12 @@ class World {
 
     this.scene.add(this.ringMesh)
     this.scene.add(this.rangeMesh.getMesh())
+
+    const near = 150;
+    const far = 900;
+    const color = 'lightblue';
+    this.scene.fog = new Three.Fog(color, near, far);
+
     this.raf()
   }
 
