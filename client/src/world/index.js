@@ -134,6 +134,12 @@ class World {
       this.threejs.domElement
     )
     controls.target.set(0, 0, 0);
+    /*
+     * Forbid the camera to "go bellow the ground".
+     * Math.PI/2 limits the camera angle exactly to the ground level.
+     * We keep it at 2.5 which will leave the camera at a slight angle for better orientation
+    */
+    controls.maxPolarAngle = Math.PI/2.5
     controls.update();
 
     this.raycaster = new Three.Raycaster();
