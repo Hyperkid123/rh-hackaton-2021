@@ -14,6 +14,10 @@ const hideWaitingElement = () => {
   }
 }
 
+const updateUi = (attribute, value) => {
+  document.getElementById(attribute).textContent = value;
+}
+
 const SERVER = 'http://localhost:3000'
 const socket = io(SERVER, {
   autoConnect: false
@@ -36,6 +40,11 @@ const emitSelect = (x, z) => {
 socket.on('update-users', (users) => {
   world.updateUsers(users)
 })
+
+socket.on('active-player', (activeUser) => {
+  updateUi('current-player', `${activeUser.playerName} (${activeUser.userID})`)
+})
+
 
 socket.on('connected', ({
   currentPlayer,

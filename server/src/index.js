@@ -7,6 +7,8 @@ const app = express();
 
 let users = []
 
+let activeUser;
+
 let army1 = new Array(1).fill().map((_, index) => ({
   id: `army-1-${index}`,
   position: {
@@ -54,6 +56,10 @@ io.on('connection', (socket) => {
     playerName: socket.playerName
   }
 
+  if(!activeUser) {
+    activeUser = currentPlayer;
+  }
+
   if(users.length < 2) {
     currentPlayer.army = users.length === 0 ? army1 : army2;
     currentPlayer.startingPosition = users.length === 0 ? 'left' : 'right';
@@ -63,6 +69,14 @@ io.on('connection', (socket) => {
   } else {
     socket.emit('connect-observer', {otherPlayers: users, worldData, isPlayer: false})
   }
+
+  socket.on('end-turn', () => {
+    console.log({activeUser, users})
+    activeUser = activeUser.userID === users[0].userID ? users[1] : users[0];
+
+    socket.emit('active-player', activeUser)
+    socket.broadcast.emit('active-player', activeUser)
+  })
 
   socket.on('error', (err) => {
     console.log('err', err)
