@@ -15,6 +15,8 @@ const FAR = 1000.0
 
 const mouse = new Three.Vector2(0, 0);
 
+const originalColor = new Three.Color("rgb(255, 255, 255)");
+
 const soldiers = {};
 class World {
   constructor({world, emitSelect, isPlayer}) {
@@ -171,7 +173,7 @@ class World {
     world.forEach((row, x) => {
       row.forEach((tile, y) => {
         const geometry = new Three.BoxGeometry( 10, 0, 10 );
-        const material = new Three.MeshStandardMaterial( { map: textureMapper[tile.type]} );
+        const material = new Three.MeshBasicMaterial( { map: textureMapper[tile.type]} );
         const cube = new Three.Mesh( geometry, material );
         cube.position.set(x * 10, 0, y * 10)
         cube.castShadow = false;
@@ -230,15 +232,16 @@ class World {
     if ( intersects.length > 0 ) {
       const tile = intersects.find(({ object } = {}) => object?.userData?.isDesk === true)
       if ( this.INTERSECTED != tile?.object ) {
-        if ( this.INTERSECTED  ) this.INTERSECTED.material.emissive.setHex( this.INTERSECTED.currentHex );
+        if ( this.INTERSECTED  ) this.INTERSECTED.material.setValues( {color: originalColor} );
         if(tile) {
-          this.INTERSECTED = tile.object;  
-          this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
-          this.INTERSECTED.material.emissive.setHex( 0xff0000 );
+          this.INTERSECTED = tile.object;
+          console.log(this.INTERSECTED.material)
+          //this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
+          this.INTERSECTED.material.setValues( { color: 0xFF0000 } );
         }
       }
     } else {
-      if ( this.INTERSECTED ) this.INTERSECTED.material.emissive.setHex( this.INTERSECTED.currentHex );
+      if ( this.INTERSECTED ) this.INTERSECTED.material.setValues( {color: originalColor} );
       this.INTERSECTED = null;
     }
 
