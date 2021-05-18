@@ -250,7 +250,10 @@ class World {
     if ( intersects.length > 0 ) {
       const tile = intersects.find(({ object } = {}) => object?.userData?.isDesk === true)
       if ( this.INTERSECTED != tile?.object ) {
-        if ( this.INTERSECTED  ) this.INTERSECTED.material.setValues( {color: originalColor} );
+        if ( this.INTERSECTED  ) {          
+          this.INTERSECTED.material.setValues( {color: originalColor} );
+          this.INTERSECTED = null
+        }
         if(tile) {
           this.INTERSECTED = tile.object;
           this.INTERSECTED.material.setValues( { color: 0xFF0000 } );
