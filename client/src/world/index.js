@@ -4,6 +4,10 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import '../controls/OrbitControls';
 import RangeMesh from '../movement/calculate-ragne';
 
+const updateUi = (attribute, value) => {
+  document.getElementById(attribute).textContent = value;
+}
+
 const FOW = 60;
 const ASPECT = 1920 / 1080;
 const NEAR = 1.0;
@@ -42,6 +46,7 @@ class World {
       if(model) {
         if(isSelected) {
           const {position: {x, z} } = rest
+          updateUi('selected-position', `${x}x ${z}z`)
           this.ringMesh.visible = true;
           this.ringMesh.position.set(x * 10, this.ringMesh.position.y, z * 10)
           this.rangeMesh.showRange(model.attributes.speed, { x, z })
