@@ -235,8 +235,6 @@ class World {
         if ( this.INTERSECTED  ) this.INTERSECTED.material.setValues( {color: originalColor} );
         if(tile) {
           this.INTERSECTED = tile.object;
-          console.log(this.INTERSECTED.material)
-          //this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
           this.INTERSECTED.material.setValues( { color: 0xFF0000 } );
         }
       }
