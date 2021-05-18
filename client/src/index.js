@@ -32,11 +32,13 @@ socket.on('update-users', (users) => {
 socket.on('connected', ({
   currentPlayer,
   otherPlayers,
-  worldData
+  worldData,
+  isPlayer,
 }) => {
-  world = new World({ world: worldData, emitSelect });
-  console.log(currentPlayer, world)
-  world.loadUser(currentPlayer)
+  world = new World({ world: worldData, emitSelect, isPlayer });
+  if(isPlayer) {
+    world.loadUser(currentPlayer)
+  }
   otherPlayers.forEach((user) => {
     world.loadUser(user)
   })

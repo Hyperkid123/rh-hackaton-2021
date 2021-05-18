@@ -17,8 +17,9 @@ const mouse = new Three.Vector2(0, 0);
 
 const soldiers = {};
 class World {
-  constructor({world, emitSelect}) {
+  constructor({world, emitSelect, isPlayer}) {
     this.emitSelect = emitSelect
+    this.isPlayer = isPlayer
     this.ringSelection = new Three.RingGeometry(2, 2.5, 10)
     this.selectionMaterial = new Three.MeshBasicMaterial(
       { color: 0xffff00, side: Three.DoubleSide }

@@ -54,15 +54,14 @@ io.on('connection', (socket) => {
     playerName: socket.playerName
   }
 
-  if(users.length < 20) {
+  if(users.length < 2) {
     currentPlayer.army = users.length === 0 ? army1 : army2;
     currentPlayer.startingPosition = users.length === 0 ? 'left' : 'right';
-    console.log(currentPlayer)
-    socket.emit('connected', {currentPlayer, otherPlayers: users, worldData})
+    socket.emit('connected', {currentPlayer, otherPlayers: users, worldData, isPlayer: true})
     socket.broadcast.emit('new-player', currentPlayer)
     users.push(currentPlayer)
   } else {
-    socket.broadcast.emit('new-observer', currentPlayer)
+    socket.emit('connected', {otherPlayers: users, worldData, isPlayer: false})
   }
 
   socket.on('error', (err) => {
