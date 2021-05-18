@@ -1,4 +1,5 @@
 import { io } from 'socket.io-client'
+import init from './controls/ui/init';
 import User from './user';
 import World from './world';
 
@@ -47,6 +48,7 @@ socket.on('connected', ({
   }
   if(isPlayer) {
     world.loadUser(currentPlayer)
+    init({ isPlayer: true, socket})
   }
   if(otherPlayers.length === 1) {
     hideWaitingElement()
