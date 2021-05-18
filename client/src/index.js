@@ -18,6 +18,10 @@ const updateUi = (attribute, value) => {
   document.getElementById(attribute).textContent = value;
 }
 
+const setAttribute = (id, attribute, value) => {
+  document.getElementById(id)[attribute] = value;
+}
+
 const SERVER = 'http://localhost:3000'
 const socket = io(SERVER, {
   autoConnect: false
@@ -41,9 +45,18 @@ socket.on('update-users', (users) => {
   world.updateUsers(users)
 })
 
-socket.on('active-player', (activeUser) => {
-  updateUi('current-player', `${activeUser.playerName} (${activeUser.userID})`)
-})
+const updateActiveUser = (activeUser) => {
+  console.log(activeUser)
+  if(activeUser.userID === localUser.userID) {
+    updateUi('current-player', `You`)
+    setAttribute('end-turn', 'disabled', false)
+  } else {
+    setAttribute('end-turn', 'disabled', true)
+    updateUi('current-player', `${activeUser.playerName} (${activeUser.userID})`)
+  }
+}
+
+socket.on('active-player', updateActiveUser)
 
 
 socket.on('connected', ({
@@ -51,11 +64,13 @@ socket.on('connected', ({
   otherPlayers,
   worldData,
   isPlayer,
+  activeUser
 }) => {
   if(!world) {
     world = new World({ world: worldData, emitSelect, isPlayer });
   }
   if(isPlayer) {
+    localUser = currentPlayer;
     world.loadUser(currentPlayer)
     init({ isPlayer: true, socket})
   }
@@ -65,6 +80,7 @@ socket.on('connected', ({
   otherPlayers.forEach((user) => {
     world.loadUser(user)
   })
+  updateActiveUser(activeUser);
 })
 
 socket.on('connect-observer', ({

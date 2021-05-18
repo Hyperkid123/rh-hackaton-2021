@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
   if(users.length < 2) {
     currentPlayer.army = users.length === 0 ? army1 : army2;
     currentPlayer.startingPosition = users.length === 0 ? 'left' : 'right';
-    socket.emit('connected', {currentPlayer, otherPlayers: users, worldData, isPlayer: true})
+    socket.emit('connected', {currentPlayer, otherPlayers: users, worldData, isPlayer: true, activeUser})
     socket.broadcast.emit('new-player', currentPlayer)
     users.push(currentPlayer)
   } else {
@@ -71,7 +71,6 @@ io.on('connection', (socket) => {
   }
 
   socket.on('end-turn', () => {
-    console.log({activeUser, users})
     activeUser = activeUser.userID === users[0].userID ? users[1] : users[0];
 
     socket.emit('active-player', activeUser)
@@ -90,6 +89,7 @@ io.on('connection', (socket) => {
       console.log(`Player "${wasPlayer.playerName}" has disconnected.`)
       socket.broadcast.emit('oponent-disconnected', wasPlayer.userID)
       users = []
+      activeUser = undefined;
     } else {
       console.log(`Observer "${socket.id}" disconnected.`)
     }
