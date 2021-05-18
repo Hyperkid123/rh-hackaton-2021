@@ -180,6 +180,22 @@ class World {
       })
     })
 
+
+    const grassTextureRepeat = new Three.TextureLoader().load( '/build/assets/textures/grass.jpeg' )
+    grassTextureRepeat.wrapS = Three.RepeatWrapping;
+    grassTextureRepeat.wrapT = Three.RepeatWrapping;
+    grassTextureRepeat.repeat.x = 100;
+    grassTextureRepeat.repeat.y = 100;
+
+    const geometry = new Three.PlaneGeometry( 1000, 1000  );
+    const material = new Three.MeshBasicMaterial( { map: grassTextureRepeat, side: Three.DoubleSide} );
+    const plane = new Three.Mesh( geometry, material );
+    plane.position.set(0, -0.1, 0);
+    plane.castShadow = false;
+    plane.receiveShadow = true;
+    plane.rotation.x = -Math.PI / 2;
+    this.scene.add( plane );
+
     this.scene.add(this.ringMesh)
     this.scene.add(this.rangeMesh.getMesh())
     this.raf()
