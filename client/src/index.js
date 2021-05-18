@@ -6,6 +6,13 @@ let world;
 const users = [];
 let localUser;
 
+const hideWaitingElement = () => {
+  const elem = document.getElementById('waiting-for-oponent');
+  if(elem) {
+    document.body.removeChild(elem);
+  }
+}
+
 const SERVER = 'http://localhost:3000'
 const socket = io(SERVER, {
   autoConnect: false
@@ -35,17 +42,47 @@ socket.on('connected', ({
   worldData,
   isPlayer,
 }) => {
-  world = new World({ world: worldData, emitSelect, isPlayer });
+  if(!world) {
+    world = new World({ world: worldData, emitSelect, isPlayer });
+  }
   if(isPlayer) {
     world.loadUser(currentPlayer)
+  }
+  if(otherPlayers.length === 1) {
+    hideWaitingElement()
   }
   otherPlayers.forEach((user) => {
     world.loadUser(user)
   })
 })
 
+socket.on('connect-observer', ({
+  currentPlayer,
+  otherPlayers,
+  worldData,
+  isPlayer,
+}) => {
+  if(!world) {
+    world = new World({ world: worldData, emitSelect, isPlayer });
+  }
+  if(otherPlayers.length === 2) {
+    hideWaitingElement()
+  }
+  otherPlayers.forEach((user) => {
+    world.loadUser(user)
+  })
+})
+
+socket.on('oponent-disconnected', () => {
+  const elem = document.createElement('h1');
+  elem.textContent = 'Your oponent has left!';
+  document.body.innerHTML = '';
+  document.body.appendChild(elem)
+})
+
 socket.on('new-player', (currentPlayer) => {
   world.loadUser(currentPlayer)
+  hideWaitingElement()
 })
 
 

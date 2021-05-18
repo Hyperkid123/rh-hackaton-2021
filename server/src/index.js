@@ -36,7 +36,7 @@ const worldData = new Array(10).fill().map( () =>
   }))
 );
 
-const server = http.createServer(app)
+const server = http.createServer(app, )
 const io = new Server(server, {
   cors: {
     origin: 'http://localhost:8080',
@@ -61,12 +61,25 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('new-player', currentPlayer)
     users.push(currentPlayer)
   } else {
-    socket.emit('connected', {otherPlayers: users, worldData, isPlayer: false})
+    socket.emit('connect-observer', {otherPlayers: users, worldData, isPlayer: false})
   }
 
   socket.on('error', (err) => {
     console.log('err', err)
   } )
+
+  socket.on('disconnect', () => {
+    const wasPlayer = users.find(({ userID }) => {
+      return userID === socket.id
+    })
+    if(wasPlayer) {
+      console.log(`Player "${wasPlayer.playerName}" has disconnected.`)
+      socket.broadcast.emit('oponent-disconnected', wasPlayer.userID)
+    } else {
+      console.log(`Observer "${socket.id}" disconnected.`)
+    }
+    socket.disconnect();
+  })
 
   socket.on('select-tile', ({x, z}) => {
     users = users.map((user) => ({
