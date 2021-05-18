@@ -36,9 +36,14 @@ class World {
     this.ringMesh.rotateX(Three.MathUtils.degToRad(90))
     this.ringMesh.visible = false;
     this.selectedMinionId = null;
-    this.rangeMesh = new RangeMesh()
+    this.rangeMesh = new RangeMesh();
+    this.isActive = false;
 
     this.init(({world}))
+  }
+
+  setActive(active) {
+    this.isActive = active
   }
 
   loadUser(user) {
@@ -113,7 +118,9 @@ class World {
     }
     const x = this.INTERSECTED.position.x / 10
     const y = this.INTERSECTED.position.z / 10
-    this.emitSelect(x, y)
+    if(this.isActive) {
+      this.emitSelect(x, y)
+    }
   }
 
   init({world}) {

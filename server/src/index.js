@@ -131,7 +131,6 @@ io.on('connection', (socket) => {
 
   socket.on('select-tile', ({x, z}) => {
     let selected;
-    console.log('select-tile', { x, z });
 
     users.forEach((user) => {
       const found = !selected && user.army.find(({isSelected}) => isSelected);

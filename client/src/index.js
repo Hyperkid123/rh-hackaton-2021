@@ -49,9 +49,13 @@ socket.on('move-minion', (positions) => {
   world.moveMinion(positions)
 })
 
+const isActive = (activeUser) => {
+  console.log(activeUser, localUser)
+  return activeUser.userID === localUser?.userID
+};
+
 const updateActiveUser = (activeUser) => {
-  console.log(activeUser)
-  if(activeUser.userID === localUser.userID) {
+  if(isActive(activeUser)) {
     updateUi('current-player', `You`)
     setAttribute('end-turn', 'disabled', false)
     setAttribute('not-my-turn', 'hidden', true)
@@ -62,7 +66,10 @@ const updateActiveUser = (activeUser) => {
   }
 }
 
-socket.on('active-player', updateActiveUser)
+socket.on('active-player',(activeUser) =>  {
+  world.setActive(isActive(activeUser))
+  updateActiveUser(activeUser)
+})
 
 
 socket.on('connected', ({
@@ -77,6 +84,7 @@ socket.on('connected', ({
   }
   if(isPlayer) {
     localUser = currentPlayer;
+    world.setActive(isActive(activeUser))
     world.loadUser(currentPlayer)
     init({ isPlayer: true, socket})
   }
