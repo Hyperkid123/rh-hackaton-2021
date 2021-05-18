@@ -75,6 +75,7 @@ io.on('connection', (socket) => {
     if(wasPlayer) {
       console.log(`Player "${wasPlayer.playerName}" has disconnected.`)
       socket.broadcast.emit('oponent-disconnected', wasPlayer.userID)
+      users = []
     } else {
       console.log(`Observer "${socket.id}" disconnected.`)
     }
