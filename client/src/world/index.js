@@ -102,7 +102,14 @@ class World {
   }
 
   moveMinion({old, new: newPosition, id}) {
-    soldiers[id].object.position.set(newPosition.x * 10, 0, newPosition.z * 10)
+    const position = { ...soldiers[id].object.position };
+    // TODO update length according to distance!!!
+    const animation = new TWEEN.Tween(position).to({x: newPosition.x * 10, z: newPosition.z * 10}, 1500);
+    animation.onUpdate(() => {
+      console.log(position)
+      soldiers[id].object.position.set(position.x, 0, position.z)
+    })
+    animation.start();
   }
 
   loadModel(x, z, isLeft, id, attributes) {
