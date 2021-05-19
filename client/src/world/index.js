@@ -4,7 +4,8 @@ import * as TWEEN from 'tween';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import '../controls/OrbitControls';
 import RangeMesh from '../movement/calculate-ragne';
-import makeLabelCanvas from '../helpers/make-label-canvas';
+
+import Soldier from '../objects/soldier';
 
 const updateUi = (attribute, value) => {
   document.getElementById(attribute).textContent = value;
@@ -121,67 +122,11 @@ class World {
   }
 
   loadModel(x, z, isLeft, id, attributes) {
-    const loader = new FBXLoader();
-    loader.load('/build/assets/models/abe/abe-t-pose.fbx', (fbx) => {
-      fbx.position.set(x, 0, z)
-      fbx.scale.set(0.05,0.05,0.05)
-      fbx.rotateY(isLeft ? Three.MathUtils.degToRad(180) : 0)
-      fbx.traverse((child) => {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      })
-
-      const anim = new FBXLoader();
-      soldiers[id] = {
-        attributes,
-        object: fbx,
-        animations: {}
-      }
-      anim.setPath('/build/assets/models/animations/')
-      anim.load('breathing-idle.fbx', anim => {
-        this.mixers[id] = {
-          ...this.mixers[id],
-          idle: new Three.AnimationMixer(fbx) 
-        }
-        soldiers[id].animations.idle = this.mixers[id].idle.clipAction(anim.animations[0])
-        soldiers[id].animations.idle.play()
-      })
-      anim.load('clown-walk.fbx', anim => {
-        this.mixers[id] = {
-          ...this.mixers[id],
-          walk: new Three.AnimationMixer(fbx)
-        }
-        soldiers[id].animations.walk = this.mixers[id].walk.clipAction(anim.animations[0])
-
-      })
-
-      const canvas = makeLabelCanvas(id)
-      const labelTexture = new Three.CanvasTexture(canvas)
-
-      labelTexture.minFilter = Three.LinearFilter;
-      labelTexture.wrapS = Three.ClampToEdgeWrapping;
-      labelTexture.wrapT = Three.ClampToEdgeWrapping;
-  
-      const labelMaterial = new Three.SpriteMaterial({
-        map: labelTexture,
-        transparent: false,
-      });
-      const label = new Three.Sprite(labelMaterial);
-      this.scene.add(label)
-
-      label.position.x = x
-      label.position.y = 15;
-      label.position.z = z;
-
-      const labelBaseScale = 0.01;
-      label.scale.x = canvas.width  * labelBaseScale;
-      label.scale.y = canvas.height * labelBaseScale;
-      soldiers[id].label = label
-  
-
-      this.scene.add(fbx)
-    })
-  }
+    const soldier = new Soldier(this.scene, x, z, isLeft, id, attributes, () => {
+      this.mixers[id] = soldier.getMixer();
+      soldiers[id] = soldier;
+    });
+  };
 
   onMouseMove( event ) {
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
