@@ -49,6 +49,10 @@ socket.on('move-minion', (positions) => {
   world.moveMinion(positions)
 })
 
+socket.on('attack', (position) => {
+  world.onAttack(position)
+})
+
 const isActive = (activeUser) => {
   console.log(activeUser, localUser)
   return activeUser.userID === localUser?.userID

@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "socket.io-client": "^4.1.1",
-    "three": "^0.128.0"
+    "three": "^0.128.0",
+    "tween": "^0.9.0"
   }
 }

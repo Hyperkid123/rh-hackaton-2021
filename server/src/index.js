@@ -41,7 +41,7 @@ let army1 = new Array(1).fill().map((_, index) => ({
   id: `army-1-${index}`,
   position: {
     x: index,
-    z: 19
+    z: 1
   },
   attributes: {
     damage: 1,
@@ -215,9 +215,8 @@ io.on('connection', (socket) => {
         socket.emit('update-users', users)
         socket.broadcast.emit('update-users', users)
 
-        // socket.emit('move-minion', {id: selected.id, old: selected.position, new: selected.position})
-        // socket.broadcast.emit('move-minion', {id: selected.id, old: selected.position, new: selected.position})
-
+        socket.emit('attack', { x, z })
+        socket.broadcast.emit('attack', { x, z })
       } else if(!attack && blockingTile) {
         users = users.map((user) => ({
           ...user,

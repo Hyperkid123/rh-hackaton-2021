@@ -1,4 +1,5 @@
 import * as Three from 'three';
+import * as TWEEN from 'tween';
 
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import '../controls/OrbitControls';
@@ -40,6 +41,29 @@ class World {
     this.isActive = false;
 
     this.init(({world}))
+  }
+
+  onAttack({x, z}) {
+    var audio = new Audio('/build/assets/sounds/spell.wav');
+    audio.play();
+
+    const explosion = new Three.Mesh(
+      new Three.SphereGeometry(5, 11, 11),
+      new Three.MeshBasicMaterial({color: 0xFF0000, transparent: true, opacity: 1})
+    )
+
+    explosion.position.set(x, 5, z);
+    explosion.scale.set(1,1,1);
+
+    let opacity = {opacity: 1};
+    const animation = new TWEEN.Tween(opacity).to({opacity: 0}, 1500);
+    animation.onUpdate(() => {
+      console.log('setting opacity', opacity)
+      explosion.material.setValues(opacity)
+    })
+    animation.start();
+
+    this.scene.add(explosion);
   }
 
   setActive(active) {
@@ -271,6 +295,7 @@ class World {
       this.INTERSECTED = null;
     }
 
+    TWEEN.update();
     this.threejs.render(this.scene, this.camera)
   }
 }
