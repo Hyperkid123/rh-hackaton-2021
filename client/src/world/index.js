@@ -39,6 +39,7 @@ class World {
     this.selectedMinionId = null;
     this.rangeMesh = new RangeMesh();
     this.isActive = false;
+    this.mixers = {}
 
     this.init(({world}))
   }
@@ -104,35 +105,56 @@ class World {
     // TODO update length according to distance!!!
     const animation = new TWEEN.Tween(position).to({x: newPosition.x * 10, z: newPosition.z * 10}, 1500);
     animation.onUpdate(() => {
-      console.log(position)
+      // console.log(position)
       soldiers[id].object.position.set(position.x, 0, position.z)
+    })
+    animation.onComplete(() => {
+      soldiers[id].animations?.idle.play()
+      soldiers[id].animations?.walk.stop()
+    })
+    animation.onStart(() => {
+      soldiers[id].animations?.idle.stop()
+      soldiers[id].animations?.walk.play()
     })
     animation.start();
   }
 
   loadModel(x, z, isLeft, id, attributes) {
-    let mixer
     const loader = new FBXLoader();
-    loader.load('/build/assets/models/dummy/xbot.fbx', (object) => {
-      object.traverse((child) => {
-        mixer = new Three.AnimationMixer(object)
-        const action = mixer.clipAction(object.animations[0]);
-        action.play()
-        object.position.set(x, 0, z)
-        object.scale.set(0.05,0.05,0.05)
-        object.rotateY(isLeft ? 90 : 0)
-        object.traverse((child) => {
-          if(child.isMesch) {
-            child.castShadow = true;
-            child.receiveShadow = true
-          }
-        })
+    loader.load('/build/assets/models/abe/abe-t-pose.fbx', (fbx) => {
+      fbx.position.set(x, 0, z)
+      fbx.scale.set(0.05,0.05,0.05)
+      fbx.rotateY(isLeft ? Three.MathUtils.degToRad(180) : 0)
+      fbx.traverse((child) => {
+        child.castShadow = true;
+        child.receiveShadow = true;
       })
+
+      const anim = new FBXLoader();
       soldiers[id] = {
         attributes,
-        object,
+        object: fbx,
+        animations: {}
       }
-      this.scene.add(object)
+      anim.setPath('/build/assets/models/animations/')
+      anim.load('breathing-idle.fbx', anim => {
+        this.mixers[id] = {
+          ...this.mixers[id],
+          idle: new Three.AnimationMixer(fbx) 
+        }
+        soldiers[id].animations.idle = this.mixers[id].idle.clipAction(anim.animations[0])
+        soldiers[id].animations.idle.play()
+      })
+      anim.load('clown-walk.fbx', anim => {
+        this.mixers[id] = {
+          ...this.mixers[id],
+          walk: new Three.AnimationMixer(fbx)
+        }
+        soldiers[id].animations.walk = this.mixers[id].walk.clipAction(anim.animations[0])
+
+      })
+
+      this.scene.add(fbx)
     })
   }
 
@@ -277,7 +299,17 @@ class World {
     })
   }
 
-  render() {
+  step() {
+    /**
+     * slow down the animation
+     */
+    Object.values(this.mixers).forEach((mixer) => {
+      mixer.idle?.update(0.01)
+      mixer.walk?.update(1)
+    })
+  }
+
+  render(t) {
     this.raycaster.setFromCamera( mouse, this.camera );
 
     // calculate objects intersecting the picking ray
@@ -301,6 +333,7 @@ class World {
     }
 
     TWEEN.update();
+    this.step()
     this.threejs.render(this.scene, this.camera)
   }
 }
