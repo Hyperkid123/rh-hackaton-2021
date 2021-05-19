@@ -89,7 +89,6 @@ class Soldier {
   }
 
   getMixer() {
-    console.log('mixers', this.mixers)
     return this.mixers;
   }
 

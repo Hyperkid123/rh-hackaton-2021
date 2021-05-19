@@ -104,10 +104,9 @@ class World {
     }
   }
 
-  moveMinion({old, new: newPosition, id}) {
+  moveMinion({old, new: newPosition, id, dist}) {
     const position = { ...soldiers[id].object.position };
-    // TODO update length according to distance!!!
-    const animation = new TWEEN.Tween(position).to({x: newPosition.x * 10, z: newPosition.z * 10}, 1500);
+    const animation = new TWEEN.Tween(position).to({x: newPosition.x * 10, z: newPosition.z * 10}, dist * 600);
     animation.onUpdate(() => {
       soldiers[id].object.position.set(position.x, 0, position.z)
       soldiers[id].label.position.x = position.x
@@ -301,7 +300,7 @@ class World {
      */
     Object.values(this.mixers).forEach((mixer) => {
       mixer.idle?.update(0.01)
-      mixer.walk?.update(1)
+      mixer.walk?.update(1.02)
     })
   }
 

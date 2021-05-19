@@ -251,8 +251,8 @@ io.on('connection', (socket) => {
         socket.emit('update-users', users)
         socket.broadcast.emit('update-users', users)
 
-        socket.emit('move-minion', {id: selected.id, old: selected.position, new: {x, z}})
-        socket.broadcast.emit('move-minion', {id: selected.id, old: selected.position, new: {x, z}})
+        socket.emit('move-minion', {id: selected.id, old: selected.position, new: {x, z}, dist})
+        socket.broadcast.emit('move-minion', {id: selected.id, old: selected.position, new: {x, z}, dist})
       }
     }
   })
