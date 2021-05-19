@@ -9,6 +9,7 @@ import RangeMesh from '../movement/calculate-ragne';
 
 import Soldier from '../objects/soldier';
 import Tree from '../objects/tree';
+import Grave from '../objects/grave';
 
 const updateUi = (attribute, value) => {
   document.getElementById(attribute).textContent = value;
@@ -102,6 +103,29 @@ class World {
       this.ringMesh.visible = false;
       this.rangeMesh.showRange(0, { x: 0, z: 0 });
     }
+  }
+
+  onDeath({id}) {
+    soldiers[id].animations?.idle.stop();
+    soldiers[id].animations?.death.play();
+
+    const grave = new Grave(this.scene, soldiers[id].position.x, soldiers[id].position.z);
+
+    setTimeout(() => {
+      const position = { ...soldiers[id].object.position };
+      const soldierAnimation = new TWEEN.Tween(position).to({ ...soldiers[id].object.position, y: - 3}, 5000);
+      soldierAnimation.onUpdate(() => {
+        soldiers[id].object.position.set(position.x, position.y, position.z)
+      })
+      soldierAnimation.start();
+
+      const gravePosition = { ...grave.getObject().position };
+      const graveAnimation = new TWEEN.Tween(gravePosition).to({ ...grave.getObject().position, y: 0 }, 5000);
+      graveAnimation.onUpdate(() => {
+        grave.getObject().position.set(gravePosition.x, gravePosition.y, position.z)
+      })
+      graveAnimation.start();
+    }, 4000)
   }
 
   moveMinion({old, new: newPosition, id, dist}) {
@@ -301,6 +325,7 @@ class World {
     Object.values(this.mixers).forEach((mixer) => {
       mixer.idle?.update(0.01)
       mixer.walk?.update(1.02)
+      mixer.death?.update(0.02)
     })
   }
 

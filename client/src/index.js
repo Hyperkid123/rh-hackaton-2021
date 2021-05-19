@@ -54,6 +54,10 @@ socket.on('attack', (position) => {
   world.onAttack(position)
 })
 
+socket.on('kill', (position) => {
+  world.onDeath(position)
+})
+
 socket.on('add-chat-message', message => {
   addMessage(message, false)
 })

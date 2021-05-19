@@ -10,7 +10,7 @@ class Soldier {
     this.isLeft = isLeft;
     this.scene = scene;
     this.object = null;
-    this.loaded = 0;
+    this.loaded = -1;
     this.afterLoad = afterLoad;
 
     this.init(afterLoad)
@@ -26,6 +26,7 @@ class Soldier {
         child.castShadow = true;
         child.receiveShadow = true;
       })
+      this.object = fbx;
 
       const anim = new FBXLoader();
 
@@ -36,7 +37,7 @@ class Soldier {
       anim.load('breathing-idle.fbx', anim => {
         this.mixers = {
           ...this.mixers,
-          idle: new Three.AnimationMixer(fbx)
+          idle: new Three.AnimationMixer(this.object)
         }
         this.animations.idle = this.mixers.idle.clipAction(anim.animations[0])
         this.animations.idle.play()
@@ -46,10 +47,20 @@ class Soldier {
       anim.load('clown-walk.fbx', anim => {
         this.mixers = {
           ...this.mixers,
-          walk: new Three.AnimationMixer(fbx)
+          walk: new Three.AnimationMixer(this.object)
         }
         this.animations.walk = this.mixers.walk.clipAction(anim.animations[0])
 
+        this.loadElement();
+      })
+      anim.load('death.fbx', anim => {
+        this.mixers = {
+          ...this.mixers,
+          death: new Three.AnimationMixer(this.object)
+        }
+        this.animations.death = this.mixers.death.clipAction(anim.animations[0]);
+        this.animations.death.clampWhenFinished = true;
+        this.animations.death.loop = Three.LoopOnce;
         this.loadElement();
       })
 
@@ -74,8 +85,6 @@ class Soldier {
       label.scale.x = canvas.width  * labelBaseScale;
       label.scale.y = canvas.height * labelBaseScale;
       this.label = label
-
-      this.object = fbx;
     })
   }
 

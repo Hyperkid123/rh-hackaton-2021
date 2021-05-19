@@ -203,6 +203,12 @@ io.on('connection', (socket) => {
           ...user,
           army: user.army.map(piece => {
             const newHealth = blockingTile.attributes.health - selected.attributes.damage;
+
+            if(piece.id === blockingTile.id && newHealth < 1) {
+              socket.emit('kill', { x, z, id: blockingTile.id })
+              socket.broadcast.emit('kill', { x, z, id: blockingTile.id })
+            }
+
             return ({
               ...piece,
               ...(piece.id === selected.id && {
