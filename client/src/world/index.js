@@ -52,7 +52,7 @@ class World {
       new Three.MeshBasicMaterial({color: 0xFF0000, transparent: true, opacity: 1})
     )
 
-    explosion.position.set(x, 5, z);
+    explosion.position.set(x * 10, 5, z * 10);
     explosion.scale.set(1,1,1);
 
     let opacity = {opacity: 1};

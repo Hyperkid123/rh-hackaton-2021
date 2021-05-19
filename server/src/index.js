@@ -41,7 +41,7 @@ let army1 = new Array(1).fill().map((_, index) => ({
   id: `army-1-${index}`,
   position: {
     x: index,
-    z: 1
+    z: 19
   },
   attributes: {
     damage: 1,
