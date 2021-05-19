@@ -165,9 +165,9 @@ class World {
 
     this.scene = new Three.Scene();
 
-    let light = new Three.DirectionalLight(0xFFFFFF);
-    light.position.set(100, 100, 100);
-    light.target.position.set(0, 0, 0);
+    let light = new Three.DirectionalLight(0xFFFFFF, 0.8);
+    light.position.set(50, 50, 0);
+    light.target.position.set(10, 0, 100);
     light.castShadow = true;
     light.shadow.bias = -0.01;
     light.shadow.mapSize.width = 2048;
@@ -180,7 +180,7 @@ class World {
     light.shadow.camera.bottom = -200;
     this.scene.add(light);
 
-    light = new Three.AmbientLight(0x404040);
+    light = new Three.AmbientLight(0xFFFFFF, 0.8);
     this.scene.add(light)
 
     this.controls = new Three.OrbitControls(
@@ -219,12 +219,13 @@ class World {
 
     world.forEach((row, x) => {
       row.forEach((tile, y) => {
-        const geometry = new Three.BoxGeometry( 10, 0, 10 );
-        const material = new Three.MeshBasicMaterial( { map: textureMapper[tile.type]} );
+        const geometry = new Three.PlaneGeometry( 10, 10 );
+        const material = new Three.MeshStandardMaterial( { map: textureMapper[tile.type]} );
         const cube = new Three.Mesh( geometry, material );
         cube.position.set(x * 10, 0, y * 10)
         cube.castShadow = false;
         cube.receiveShadow = true;
+        cube.rotation.x = -Math.PI / 2;
         cube.userData.isDesk = true
         this.scene.add( cube );
       })
@@ -238,7 +239,7 @@ class World {
     grassTextureRepeat.repeat.y = 100;
 
     const geometry = new Three.PlaneGeometry( 1000, 1000  );
-    const material = new Three.MeshBasicMaterial( { map: grassTextureRepeat, side: Three.DoubleSide} );
+    const material = new Three.MeshStandardMaterial( { map: grassTextureRepeat, side: Three.DoubleSide} );
     const plane = new Three.Mesh( geometry, material );
     plane.position.set(0, -0.1, 0);
     plane.castShadow = false;
