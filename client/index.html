@@ -10,16 +10,23 @@
       padding: 0;
       margin: 0;
     }
-
-    #ui {
-      z-index: 1;
-      position: absolute;
-    }
-
     #info-card {
+      z-index: 5;
+      width: 300px;
+      height: 50px;
+      position: absolute;
       background: red;
-      width: 200px;
-      height: 400px;
+      left: 8px;
+      top: 8px;
+      background-color: lightgray;
+      text-shadow: -1px -1px black, 1px 1px white;
+      color: gray;
+      border-radius: 7px;
+      box-shadow: 0 .2em gray;
+      text-align: center;
+      font-size: 12px;
+      align-items: center;
+      display: grid;
     }
     #waiting-for-oponent {
       position: absolute;
@@ -37,24 +44,67 @@
       z-index: 5;
       text-align: center;
       color: wheat;
+      font-size: 8px;
+    }
+
+    @font-face {
+      font-family: 'Press Start 2p';
+      src: url(/build/assets/fonts/PressStart2P-Regular.ttf);
+    }
+
+    body {
+      background-color: black;
+      font-family: 'Press Start 2p';
+    }
+    .start-btn{
+      text-align: center;
+      display: inline-block;
+      margin:5px;
+      min-width: 200px;
+      font-weight: bold;
+      padding: 10px 0 10px 10px ;
+      background-color: lightgray;
+      text-shadow: -1px -1px black, 1px 1px white;
+      color: gray;
+      -webkit-border-radius: 7px;
+      -moz-border-radius: 7px;
+      -o-border-radius: 7px;
+      border-radius: 7px;
+      box-shadow: 0 .2em gray;
+      cursor: pointer;
+      font-size: 24px;
+      z-index: 6;
+    }
+    .start-btn:hover {
+      transform: scale(1.1);
+    }
+    .start-btn:active {
+      transform: scale(0.9);
+    }
+    .start-btn:disabled {
+      opacity: 0.5;
+    }
+
+    #end-turn {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+    }
+
+    #rage-quit {
+      position: absolute;
+      top: 8px;
+      right: 8px;
     }
   </style>
 </head>
 <body>
+  <button hidden class="start-btn end-turn" id="end-turn">END TURN</button>
+  <button hidden class="start-btn rage-quit" id="rage-quit">RAGE QUIT</button>
   <div id="waiting-for-oponent"><h1>Waiting for oponent</h1></div>
   <div hidden id="not-my-turn"><h1>Waiting for oponent to finish its turn</h1></div>
-  <div id="ui">
-    <div id="info-card">
-        Selected position: <span id="selected-position">Not selected</span>
-        <p>Current player: <span id="current-player">Player 1</span></p>
-      <div>
-        <p>
-          Controls
-        </p>
-        <button hidden id="end-turn">END TURN</button>
-        <button hidden id="rage-quit">RAGE QUIT</button>
-      </div>
-    </div>
+  <div id="info-card">
+      <p>Current player: <span id="current-player">Player 1</span></p>
   </div>
   <div hidden id="connect-form">
     <div>

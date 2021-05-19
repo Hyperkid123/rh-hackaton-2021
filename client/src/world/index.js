@@ -93,11 +93,9 @@ class World {
       this.selectedMinionId = id;
       this.ringMesh.visible = true;
       this.rangeMesh.showRange(selected.attributes.remainingSpeed, { x, z });
-      updateUi('selected-position', `${x}x ${z}z`)
     } else {
       this.ringMesh.visible = false;
       this.rangeMesh.showRange(0, { x: 0, z: 0 });
-      updateUi('selected-position', 'none')
     }
   }
 

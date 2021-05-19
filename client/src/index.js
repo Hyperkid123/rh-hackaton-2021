@@ -65,7 +65,7 @@ const updateActiveUser = (activeUser) => {
     setAttribute('not-my-turn', 'hidden', true)
   } else {
     setAttribute('end-turn', 'disabled', true)
-    updateUi('current-player', `${activeUser.playerName} (${activeUser.userID})`)
+    updateUi('current-player', `Oponent`)
     setAttribute('not-my-turn', 'hidden', false)
   }
 }
