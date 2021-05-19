@@ -1,11 +1,14 @@
 import * as Three from 'three';
 import * as TWEEN from 'tween';
 
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
+
 import '../controls/OrbitControls';
 import RangeMesh from '../movement/calculate-ragne';
 
 import Soldier from '../objects/soldier';
+import Tree from '../objects/tree';
 
 const updateUi = (attribute, value) => {
   document.getElementById(attribute).textContent = value;
@@ -249,6 +252,25 @@ class World {
 
     this.scene.add(this.ringMesh)
     this.scene.add(this.rangeMesh.getMesh())
+
+
+    const objLoader = new OBJLoader();
+    const mtlLoader = new MTLLoader();
+
+    let initialX = -300;
+    let initialY = -300;
+
+    while(initialY <= 500) {
+      while(initialX <= 500) {
+        if(!(initialY < 210 && initialY > -10 && initialX > -10 && initialX < 110)) {
+          new Tree(this.scene, initialX, initialY, objLoader, mtlLoader)
+        }
+        initialX += 25;
+      }
+
+      initialY += 25;
+      initialX = -300;
+    }
 
     const near = 150;
     const far = 900;
