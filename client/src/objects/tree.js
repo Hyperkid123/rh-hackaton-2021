@@ -1,3 +1,5 @@
+import * as Three from 'three';
+
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -24,6 +26,12 @@ class Tree {
         obj.scale.set(5,5,5)
         obj.castShadow = true;
         obj.receiveShadow = true;
+
+        obj.traverse( function ( child ) {
+          if ( child instanceof Three.Mesh ) {
+              child.castShadow = true;
+          }
+        } );
 
         obj.rotateY(getRandomInt(0, 360) * Math.PI / 180 );
 
