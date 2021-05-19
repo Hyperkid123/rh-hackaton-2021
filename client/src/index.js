@@ -64,7 +64,6 @@ socket.on('add-chat-message', message => {
 
 socket.on('game-over', (deadUsers) => {
     const lost = !!deadUsers.find(id => localUser.userID === id)
-    console.log({ lost })
     if(lost) {
       setAttribute('lost', 'hidden', false)
       setAttribute('lost', 'className', 'overlay')

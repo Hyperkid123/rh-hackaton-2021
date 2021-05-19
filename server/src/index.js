@@ -231,8 +231,7 @@ io.on('connection', (socket) => {
         socket.emit('update-users', users)
         socket.broadcast.emit('update-users', users)
 
-        socket.emit('attack', { x, z })
-        socket.broadcast.emit('attack', { x, z })
+        io.emit('attack', { x, z, targetId: blockingTile.id, damage: selected.attributes.damage })
 
         let deadUserIds = [];
         users.forEach(({userID, army }) => {

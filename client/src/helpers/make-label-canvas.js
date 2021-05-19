@@ -29,7 +29,7 @@ function makeLabelCanvas(name) {
   ctx.fillStyle = 'white';
   ctx.fillText(name, 0, 0);
 
-  return ctx.canvas;
+  return ctx;
 }
 
 export default makeLabelCanvas

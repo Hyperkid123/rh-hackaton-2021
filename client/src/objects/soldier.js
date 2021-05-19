@@ -64,28 +64,38 @@ class Soldier {
         this.loadElement();
       })
 
-      const canvas = makeLabelCanvas(this.id)
-      const labelTexture = new Three.CanvasTexture(canvas)
-
-      labelTexture.minFilter = Three.LinearFilter;
-      labelTexture.wrapS = Three.ClampToEdgeWrapping;
-      labelTexture.wrapT = Three.ClampToEdgeWrapping;
-
-      const labelMaterial = new Three.SpriteMaterial({
-        map: labelTexture,
-        transparent: false,
-      });
-      const label = new Three.Sprite(labelMaterial);
-
-      label.position.x = this.position.x
-      label.position.y = 15;
-      label.position.z = this.position.z;
-
-      const labelBaseScale = 0.01;
-      label.scale.x = canvas.width  * labelBaseScale;
-      label.scale.y = canvas.height * labelBaseScale;
-      this.label = label
+      this.object = fbx;
     })
+    this.loadFont()
+  }
+
+  loadFont() {
+    const fotnLoader = new Three.FontLoader()
+    fotnLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/fonts/gentilis_bold.typeface.json', font => {
+      this.font = font
+      this.createLabel()
+    })
+  }
+
+  createLabel() {
+    if(this.font) {
+      const textGeometry = new Three.TextGeometry(`${this.id}\n${this.attributes.health} hp`, {
+        font: this.font,
+        size: 80,
+        height: 1,
+        curveSegments: 12,
+        bevelEnabled: true
+      });
+      const textMaterial = new Three.MeshStandardMaterial({color: 0xf5debd3})
+      const textMesh = new Three.Mesh(textGeometry, textMaterial)
+      textMesh.castShadow = false;
+      textMesh.receiveShadow = false;
+      textMesh.position.set(this.object?.position.x || this.position.x, 15, this.object?.position.z || this.position.z)
+      textMesh.scale.set(0.02, 0.02, 0.02)
+      textMesh.rotateY(Three.MathUtils.degToRad(90))
+  
+      this.label = textMesh
+    }
   }
 
   loadElement() {
@@ -103,6 +113,14 @@ class Soldier {
 
   getObject() {
     return this.object;
+  }
+
+  receiveDamage(damage) {
+    const hp = this.attributes.health - damage
+    this.attributes.health = hp < 0 ? 0 : hp
+    this.scene.remove(this.label)
+    this.createLabel()
+    this.scene.add(this.label)
   }
 }
 

@@ -50,9 +50,11 @@ class World {
     this.init(({world}))
   }
 
-  onAttack({x, z}) {
+  onAttack({x, z, targetId, damage}) {
     var audio = new Audio('/build/assets/sounds/spell.wav');
     audio.play();
+
+    soldiers[targetId].receiveDamage(damage)
 
     const explosion = new Three.Mesh(
       new Three.SphereGeometry(5, 11, 11),
