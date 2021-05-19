@@ -1,4 +1,5 @@
 import { io } from 'socket.io-client'
+import { addMessage } from './controls/ui/chat';
 import init from './controls/ui/init';
 import User from './user';
 import World from './world';
@@ -51,6 +52,10 @@ socket.on('move-minion', (positions) => {
 
 socket.on('attack', (position) => {
   world.onAttack(position)
+})
+
+socket.on('add-chat-message', message => {
+  addMessage(message, false)
 })
 
 const isActive = (activeUser) => {

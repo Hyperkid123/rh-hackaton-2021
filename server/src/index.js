@@ -104,6 +104,10 @@ io.on('connection', (socket) => {
     socket.emit('connect-observer', {otherPlayers: users, worldData, isPlayer: false})
   }
 
+  socket.on('add-chat-message', (message) => {
+    socket.broadcast.emit('add-chat-message', message)
+  })
+
   socket.on('end-turn', () => {
     activeUser = activeUser.userID === users[0].userID ? users[1] : users[0];
 

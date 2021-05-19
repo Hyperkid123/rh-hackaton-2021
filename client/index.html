@@ -101,6 +101,30 @@
       background-color: red;
       pad: 16px;
     }
+
+    #chat-window {
+      background-color: rgba(0, 0, 0, 0.8);
+      width: 300px;
+      height: 240px;
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      border-radius: 5px;
+      padding: 5px;
+      color: wheat;
+      z-index: 10;
+    }
+    #chat-content {
+      overflow-x: auto;
+      height: calc(240px - 22px);
+    }
+    #chat-content > p.remote {
+      color: thistle
+    }
+    #send-message {
+      position: relative;
+      bottom: 0;
+    }
   </style>
 </head>
 <body>
@@ -110,6 +134,13 @@
   <div hidden id="not-my-turn"><h1>Waiting for oponent to finish its turn</h1></div>
   <div id="info-card">
       <p>Current player: <span id="current-player">Player 1</span></p>
+  </div>
+  <div id="chat-window">
+    <div id="chat-content"></div>
+    <form id="send-message">
+      <input id="message-input" />
+      <button type="submit" id="message-submit">Send</button>
+    </form>
   </div>
   <div hidden id="connect-form">
     <div>
