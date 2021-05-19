@@ -197,6 +197,8 @@ class World {
      * We keep it at 2.5 which will leave the camera at a slight angle for better orientation
     */
     this.controls.maxPolarAngle = Math.PI/2.5
+    this.controls.maxDistance = 500
+    this.controls.minDistance = 10
     this.controls.update();
 
     this.raycaster = new Three.Raycaster();
