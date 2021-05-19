@@ -54,7 +54,6 @@ socket.on('attack', (position) => {
 })
 
 const isActive = (activeUser) => {
-  console.log(activeUser, localUser)
   return activeUser.userID === localUser?.userID
 };
 

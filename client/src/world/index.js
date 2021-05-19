@@ -4,6 +4,7 @@ import * as TWEEN from 'tween';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import '../controls/OrbitControls';
 import RangeMesh from '../movement/calculate-ragne';
+import makeLabelCanvas from '../helpers/make-label-canvas';
 
 const updateUi = (attribute, value) => {
   document.getElementById(attribute).textContent = value;
@@ -59,7 +60,6 @@ class World {
     let opacity = {opacity: 1};
     const animation = new TWEEN.Tween(opacity).to({opacity: 0}, 1500);
     animation.onUpdate(() => {
-      console.log('setting opacity', opacity)
       explosion.material.setValues(opacity)
     })
     animation.start();
@@ -105,8 +105,9 @@ class World {
     // TODO update length according to distance!!!
     const animation = new TWEEN.Tween(position).to({x: newPosition.x * 10, z: newPosition.z * 10}, 1500);
     animation.onUpdate(() => {
-      // console.log(position)
       soldiers[id].object.position.set(position.x, 0, position.z)
+      soldiers[id].label.position.x = position.x
+      soldiers[id].label.position.z = position.z
     })
     animation.onComplete(() => {
       soldiers[id].animations?.idle.play()
@@ -154,6 +155,30 @@ class World {
 
       })
 
+      const canvas = makeLabelCanvas(id)
+      const labelTexture = new Three.CanvasTexture(canvas)
+
+      labelTexture.minFilter = Three.LinearFilter;
+      labelTexture.wrapS = Three.ClampToEdgeWrapping;
+      labelTexture.wrapT = Three.ClampToEdgeWrapping;
+  
+      const labelMaterial = new Three.SpriteMaterial({
+        map: labelTexture,
+        transparent: false,
+      });
+      const label = new Three.Sprite(labelMaterial);
+      this.scene.add(label)
+
+      label.position.x = x
+      label.position.y = 15;
+      label.position.z = z;
+
+      const labelBaseScale = 0.01;
+      label.scale.x = canvas.width  * labelBaseScale;
+      label.scale.y = canvas.height * labelBaseScale;
+      soldiers[id].label = label
+  
+
       this.scene.add(fbx)
     })
   }
@@ -180,6 +205,7 @@ class World {
     this.threejs.shadowMap.type = Three.PCFShadowMap;
     this.threejs.setPixelRatio(window.devicePixelRatio);
     this.threejs.setSize(window.innerWidth, window.innerHeight);
+
 
     document.body.appendChild(this.threejs.domElement)
     window.addEventListener('resize', () => {
