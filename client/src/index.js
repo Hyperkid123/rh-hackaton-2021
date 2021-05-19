@@ -58,6 +58,19 @@ socket.on('add-chat-message', message => {
   addMessage(message, false)
 })
 
+socket.on('game-over', (deadUsers) => {
+    const lost = !!deadUsers.find(id => localUser.userID === id)
+    console.log({ lost })
+    if(lost) {
+      setAttribute('lost', 'hidden', false)
+      setAttribute('lost', 'className', 'overlay')
+      setAttribute('death-container', 'className', 'death-background')
+    } else {
+      setAttribute('won', 'hidden', false)
+      setAttribute('won', 'className', 'overlay')
+    }
+})
+
 const isActive = (activeUser) => {
   return activeUser.userID === localUser?.userID
 };

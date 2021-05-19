@@ -9,6 +9,10 @@ let users = []
 
 let activeUser;
 
+function armyIsDead(army = []) {
+  return army.every(({attributes: { isDead }}) => isDead === true)
+}
+
 function blocked({ x, z }, pieceId, users = []) {
   let isBlocked
   users.forEach(({ army }) => {
@@ -47,7 +51,8 @@ let army1 = new Array(1).fill().map((_, index) => ({
     damage: 1,
     health: 10,
     speed: 5,
-    remainingSpeed: 5
+    remainingSpeed: 5,
+    isDead: false,
   },
   isSelected: false
 }))
@@ -61,7 +66,8 @@ let army2 = new Array(1).fill().map((_, index) => ({
     damage: 1,
     health: 10,
     speed: 5,
-    remainingSpeed: 5
+    remainingSpeed: 5,
+    isDead: false,
   },
   isSelected: false
 }))
@@ -221,6 +227,16 @@ io.on('connection', (socket) => {
 
         socket.emit('attack', { x, z })
         socket.broadcast.emit('attack', { x, z })
+
+        let deadUserIds = [];
+        users.forEach(({userID, army }) => {
+          if(armyIsDead(army)) {
+            deadUserIds.push(userID)
+          }
+        })
+        if(deadUserIds.length > 0) {
+          io.emit('game-over', deadUserIds)
+        }
       } else if(!attack && blockingTile) {
         users = users.map((user) => ({
           ...user,

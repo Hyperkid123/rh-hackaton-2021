@@ -144,12 +144,77 @@
       position: relative;
       bottom: 0;
     }
+    .overlay {
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.8);
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .death-background {
+      background: black;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      text-align: center;
+      opacity: 1;
+      animation: fade-in 10s linear;
+    }
+    .death-background * {
+      color: #ff0000;
+      font-family: OptimusPrinceps, sans-serif;
+      letter-spacing: 5px;
+      font-size: 8em;
+      font-weight: 400;
+      animation: fade-in 10s linear, text-zoom 5s linear;
+    }
+
+    @keyframes fade-in {
+      0% {
+        opacity: 0;
+      }
+      25% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    @keyframes text-zoom {
+      0% {
+        font-size: 5em;
+      }
+      25% {
+        font-size: 6em;
+      }
+      50% {
+        font-size: 7em;
+      }
+      75% {
+        font-size: 8em;
+      }
+      100% {
+        font-size: 8em;
+      }
+    }
   </style>
 </head>
 <body>
   <button hidden class="start-btn end-turn" id="end-turn">END TURN</button>
   <button hidden class="start-btn rage-quit" id="rage-quit">RAGE QUIT</button>
   <div id="waiting-for-oponent"><h1>Waiting for oponent</h1></div>
+  <div hidden id="lost">
+    <div id="death-container">
+      <h1>You died</h1>
+    </div>
+  </div>
+  <div hidden id="won"><h1>Congratz, you have won!</h1></div>
   <div hidden id="not-my-turn"><h1>Waiting for oponent to finish its turn</h1></div>
   <div id="info-card">
       <p>Current player: <span id="current-player">Player 1</span></p>
