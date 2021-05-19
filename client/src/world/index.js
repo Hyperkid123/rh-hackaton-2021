@@ -169,18 +169,18 @@ class World {
     this.scene = new Three.Scene();
 
     let light = new Three.DirectionalLight(0xFFFFFF, 0.8);
-    light.position.set(50, 50, 0);
-    light.target.position.set(10, 0, 100);
+    light.position.set(100, 500, -500);
+    light.target.position.set(100, 0, -300);
     light.castShadow = true;
     light.shadow.bias = -0.01;
     light.shadow.mapSize.width = 2048;
     light.shadow.mapSize.height = 2048;
     light.shadow.camera.near = NEAR;
-    light.shadow.camera.far = 500;
-    light.shadow.camera.left = 200;
-    light.shadow.camera.right = -200;
-    light.shadow.camera.top = 200;
-    light.shadow.camera.bottom = -200;
+    light.shadow.camera.far = 1000;
+    light.shadow.camera.left = 1000;
+    light.shadow.camera.right = -1000;
+    light.shadow.camera.top = 1000;
+    light.shadow.camera.bottom = -1000;
     this.scene.add(light);
 
     light = new Three.AmbientLight(0xFFFFFF, 0.8);
