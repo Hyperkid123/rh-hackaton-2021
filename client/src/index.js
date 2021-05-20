@@ -11,7 +11,7 @@ let localUser;
 const hideWaitingElement = () => {
   const elem = document.getElementById('waiting-for-oponent');
   if(elem) {
-    document.body.removeChild(elem);
+    document.getElementById('game-ui').removeChild(elem);
   }
 }
 
@@ -156,9 +156,8 @@ socket.on('new-player', (currentPlayer) => {
 const connectButton = document.getElementById('connect');
 
 const connect = () => {
-  // const input = document.getElementById('player-name')
-  // const value = input.value
-  const value = 'mm'
+  const input = document.getElementById('player-name')
+  const value = input.value
   if(!value) {
     console.error('Fill name!')
   } else {
@@ -168,9 +167,8 @@ const connect = () => {
     socket.connect()
     const form = document.getElementById('connect-form');
     document.body.removeChild(form)
+    setAttribute('game-ui', 'hidden', false)
   }
 }
-
-connect()
 
 connectButton.onclick  = connect;

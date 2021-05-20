@@ -144,6 +144,23 @@
       position: relative;
       bottom: 0;
     }
+    #connect-form {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100vw;
+      height: 100vh;
+      color: wheat;
+    }
+    .player-name {
+      width: 50vw;
+      text-align: center;
+      font-size: 2em;
+      border-radius: 5px;
+      margin-top: 5vh;
+      margin-bottom: 5vh;
+    }
     .overlay {
       z-index: 100;
       background: rgba(255, 255, 255, 0.8);
@@ -206,34 +223,37 @@
   </style>
 </head>
 <body>
-  <button hidden class="start-btn end-turn" id="end-turn">END TURN</button>
-  <button hidden class="start-btn rage-quit" id="rage-quit">RAGE QUIT</button>
-  <div id="waiting-for-oponent"><h1>Waiting for oponent</h1></div>
-  <div hidden id="lost">
-    <div id="death-container">
-      <h1>You died</h1>
-    </div>
-  </div>
-  <div hidden id="won"><h1>Congratz, you have won!</h1></div>
-  <div hidden id="not-my-turn"><h1>Waiting for oponent to finish its turn</h1></div>
-  <div id="info-card">
-      <p>Current player: <span id="current-player">Player 1</span></p>
-  </div>
-  <div id="chat-window">
-    <div id="chat-content"></div>
-    <form id="send-message">
-      <div id="message-toolbar">
-        <input id="message-input" />
-        <button type="submit" id="message-submit">Send</button>
+  <div hidden id="game-ui">
+    <div id="waiting-for-oponent"><h1>Waiting for oponent</h1></div>
+    <button hidden class="start-btn end-turn" id="end-turn">END TURN</button>
+    <button hidden class="start-btn rage-quit" id="rage-quit">RAGE QUIT</button>
+    <div hidden id="lost">
+      <div id="death-container">
+        <h1>You died</h1>
       </div>
-    </form>
+    </div>
+    <div hidden id="won"><h1>Congratz, you have won!</h1></div>
+    <div hidden id="not-my-turn"><h1>Waiting for oponent to finish its turn</h1></div>
+    <div id="info-card">
+        <p>Current player: <span id="current-player">Player 1</span></p>
+    </div>
+    <div id="chat-window">
+      <div id="chat-content"></div>
+      <form autocomplete="off" id="send-message">
+        <div id="message-toolbar">
+          <input autocomplete="false" id="message-input" />
+          <button type="submit" id="message-submit">Send</button>
+        </div>
+      </form>
+    </div>
   </div>
-  <div hidden id="connect-form">
+  <div id="connect-form">
+    <h1>Welcome to the royal rumble!</h1>
     <div>
-      <input name="name" id="player-name" />
+      <input placeholder="Choose your name" class="player-name" type="text" autocomplete="false" name="name" id="player-name" />
     </div>
     <div>
-      <button id="connect" >Connect</button>
+      <button class="start-btn" id="connect" >Connect</button>
     </div>
   </div>
 </body>
