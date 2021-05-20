@@ -50,7 +50,7 @@ let army1 = new Array(5).fill().map((_, index) => ({
   attributes: {
     damage: index * 2 > 5 ? index * 2 > 7 ? 3 : 2 : 1,
     health: 3,
-    speed: index * 2 > 5 ? index * 2 > 7 ? 3 : 2 : 10,
+    speed: index * 2 > 5 ? index * 2 > 7 ? 3 : 6 : 10,
     remainingSpeed: index * 2 > 5 ? index * 2 > 7 ? 3 : 6 : 10,
     isDead: false,
   },
@@ -65,7 +65,7 @@ let army2 = new Array(5).fill().map((_, index) => ({
   attributes: {
     damage: index * 2 > 5 ? index * 2 > 7 ? 3 : 2 : 1,
     health: 3,
-    speed: index * 2 > 5 ? index * 2 > 7 ? 3 : 2 : 10,
+    speed: index * 2 > 5 ? index * 2 > 7 ? 3 : 6 : 10,
     remainingSpeed: index * 2 > 5 ? index * 2 > 7 ? 3 : 6 : 10,
     isDead: false,
   },
