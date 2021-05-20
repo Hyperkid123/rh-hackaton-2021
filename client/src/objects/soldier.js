@@ -93,7 +93,9 @@ class Soldier {
   }
 
   updateLocator(x, z) {
-    this.ringMesh.position.set(x, this.ringMesh.position.y, z)
+    if(this.isLocalArmy) {
+      this.ringMesh.position.set(x, this.ringMesh.position.y, z)
+    }
   }
 
   createLabel() {
