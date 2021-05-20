@@ -179,7 +179,7 @@ class World {
     this.threejs = new Three.WebGL1Renderer();
     this.threejs.shadowMap.enabled = true;
     this.threejs.shadowMap.type = Three.PCFShadowMap;
-    this.threejs.setPixelRatio(window.devicePixelRatio);
+    this.threejs.setPixelRatio(1);
     this.threejs.setSize(window.innerWidth, window.innerHeight);
 
 
