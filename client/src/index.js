@@ -106,7 +106,7 @@ socket.on('connected', ({
   activeUser
 }) => {
   if(!world) {
-    world = new World({ world: worldData, emitSelect, isPlayer });
+    world = new World({ world: worldData, emitSelect, isPlayer, localUser: isPlayer ? currentPlayer : undefined });
   }
   if(isPlayer) {
     localUser = currentPlayer;
@@ -130,7 +130,7 @@ socket.on('connect-observer', ({
   isPlayer,
 }) => {
   if(!world) {
-    world = new World({ world: worldData, emitSelect, isPlayer });
+    world = new World({ world: worldData, emitSelect, isPlayer, localUser });
   }
   if(otherPlayers.length === 2) {
     hideWaitingElement()

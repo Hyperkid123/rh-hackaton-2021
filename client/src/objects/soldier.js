@@ -3,7 +3,7 @@ import * as Three from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import makeLabelCanvas from '../helpers/make-label-canvas';
 class Soldier {
-  constructor(scene, x, z, isLeft, id, attributes, afterLoad) {
+  constructor(scene, x, z, isLeft, id, attributes, isLocalArmy, afterLoad) {
     this.id = id;
     this.attributes = attributes;
     this.position = { x, z };
@@ -12,6 +12,7 @@ class Soldier {
     this.object = null;
     this.loaded = -1;
     this.afterLoad = afterLoad;
+    this.isLocalArmy = isLocalArmy
 
     this.init(afterLoad)
   }
@@ -66,6 +67,9 @@ class Soldier {
 
       this.object = fbx;
     })
+    if(this.isLocalArmy) {
+      this.createLocator()
+    }
     this.loadFont()
   }
 
@@ -75,6 +79,21 @@ class Soldier {
       this.font = font
       this.createLabel()
     })
+  }
+
+  createLocator() {
+    this.ringSelection = new Three.RingGeometry(2, 2.5, 25)
+    this.selectionMaterial = new Three.MeshBasicMaterial(
+      { color: 0x00fa9a, side: Three.DoubleSide }
+    )
+    this.ringMesh = new Three.Mesh(this.ringSelection, this.selectionMaterial)
+    this.ringMesh.position.set(this.object?.position.x || this.position.x, 0.2, this.object?.position.z || this.position.z)
+    this.ringMesh.scale.set(2,2,2)
+    this.ringMesh.rotateX(Three.MathUtils.degToRad(90))
+  }
+
+  updateLocator(x, z) {
+    this.ringMesh.position.set(x, this.ringMesh.position.y, z)
   }
 
   createLabel() {
@@ -104,6 +123,9 @@ class Soldier {
       this.afterLoad();
       this.scene.add(this.object);
       this.scene.add(this.label);
+      if(this.isLocalArmy) {
+        this.scene.add(this.ringMesh)
+      }
     };
   }
 

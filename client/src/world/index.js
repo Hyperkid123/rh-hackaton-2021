@@ -30,7 +30,7 @@ const originalColor = new Three.Color("rgb(255, 255, 255)");
 
 const soldiers = {};
 class World {
-  constructor({world, emitSelect, isPlayer}) {
+  constructor({world, emitSelect, isPlayer, localUser}) {
     this.emitSelect = emitSelect
     this.isPlayer = isPlayer
     this.ringSelection = new Three.RingGeometry(2, 2.5, 10)
@@ -46,6 +46,7 @@ class World {
     this.rangeMesh = new RangeMesh();
     this.isActive = false;
     this.mixers = {}
+    this.localUser = localUser
 
     this.init(({world}))
   }
@@ -79,8 +80,9 @@ class World {
   }
 
   loadUser(user) {
+    const isLocalArmy = this.localUser && user.userID === this.localUser.userID
     user.army.forEach(({position: {x, z}, attributes, id}) => {
-      this.loadModel(x * 10 , z * 10, user.startingPosition === 'left', id, attributes)
+      this.loadModel(x * 10 , z * 10, user.startingPosition === 'left', id, attributes, isLocalArmy)
     })
   }
 
@@ -137,6 +139,7 @@ class World {
       soldiers[id].object.position.set(position.x, 0, position.z)
       soldiers[id].label.position.x = position.x
       soldiers[id].label.position.z = position.z
+      soldiers[id].updateLocator(position.x, position.z)
     })
     animation.onComplete(() => {
       soldiers[id].animations?.idle.play()
@@ -149,8 +152,8 @@ class World {
     animation.start();
   }
 
-  loadModel(x, z, isLeft, id, attributes) {
-    const soldier = new Soldier(this.scene, x, z, isLeft, id, attributes, () => {
+  loadModel(x, z, isLeft, id, attributes, isLocalArmy) {
+    const soldier = new Soldier(this.scene, x, z, isLeft, id, attributes, isLocalArmy, () => {
       this.mixers[id] = soldier.getMixer();
       soldiers[id] = soldier;
     });
