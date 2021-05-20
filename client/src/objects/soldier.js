@@ -101,7 +101,7 @@ class Soldier {
 
   createLabel() {
     if(this.font) {
-      const textGeometry = new Three.TextGeometry(`${this.id}\n${this.attributes.health} hp`, {
+      const textGeometry = new Three.TextGeometry(`${this.id}\n${this.attributes.damage} dmg\n${this.attributes.health} hp`, {
         font: this.font,
         size: 80,
         height: 1,

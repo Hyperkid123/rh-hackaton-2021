@@ -41,32 +41,32 @@ const calculateSpeed = (currentPosition, newPosition, speed) => {
   return distance([currentPosition.x, currentPosition.z], [newPosition.x, newPosition.z]);
 };
 
-let army1 = new Array(1).fill().map((_, index) => ({
+let army1 = new Array(5).fill().map((_, index) => ({
   id: `army-1-${index}`,
   position: {
-    x: index,
+    x: index * 2,
     z: 19
   },
   attributes: {
-    damage: 1,
-    health: 1,
-    speed: 55,
-    remainingSpeed: 55,
+    damage: index * 2 > 5 ? index * 2 > 7 ? 3 : 2 : 1,
+    health: 3,
+    speed: index * 2 > 5 ? index * 2 > 7 ? 3 : 2 : 10,
+    remainingSpeed: index * 2 > 5 ? index * 2 > 7 ? 3 : 6 : 10,
     isDead: false,
   },
   isSelected: false
 }))
-let army2 = new Array(1).fill().map((_, index) => ({
+let army2 = new Array(5).fill().map((_, index) => ({
   id: `army-2-${index}`,
   position: {
-    x: index,
+    x: index * 2,
     z: 0
   },
   attributes: {
-    damage: 1,
-    health: 1,
-    speed: 55,
-    remainingSpeed: 55,
+    damage: index * 2 > 5 ? index * 2 > 7 ? 3 : 2 : 1,
+    health: 3,
+    speed: index * 2 > 5 ? index * 2 > 7 ? 3 : 2 : 10,
+    remainingSpeed: index * 2 > 5 ? index * 2 > 7 ? 3 : 6 : 10,
     isDead: false,
   },
   isSelected: false
