@@ -156,7 +156,7 @@ class World {
     const soldier = new Soldier(this.scene, x, z, isLeft, id, attributes, isLocalArmy, () => {
       this.mixers[id] = soldier.getMixer();
       soldiers[id] = soldier;
-    });
+    }, this.camera);
   };
 
   onMouseMove( event ) {
@@ -331,6 +331,10 @@ class World {
       mixer.idle?.update(0.01)
       mixer.walk?.update(1.02)
       mixer.death?.update(0.02)
+    })
+
+    Object.values(soldiers).forEach((soldier) => {
+      soldier.getLabel().quaternion.copy(this.camera.quaternion)
     })
   }
 

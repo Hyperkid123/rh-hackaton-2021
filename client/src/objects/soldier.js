@@ -3,7 +3,7 @@ import * as Three from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import makeLabelCanvas from '../helpers/make-label-canvas';
 class Soldier {
-  constructor(scene, x, z, isLeft, id, attributes, isLocalArmy, afterLoad) {
+  constructor(scene, x, z, isLeft, id, attributes, isLocalArmy, afterLoad, camera) {
     this.id = id;
     this.attributes = attributes;
     this.position = { x, z };
@@ -12,7 +12,8 @@ class Soldier {
     this.object = null;
     this.loaded = -1;
     this.afterLoad = afterLoad;
-    this.isLocalArmy = isLocalArmy
+    this.isLocalArmy = isLocalArmy;
+    this.camera = camera;
 
     this.init(afterLoad)
   }
@@ -114,7 +115,9 @@ class Soldier {
       textMesh.position.set(this.object?.position.x || this.position.x, 15, this.object?.position.z || this.position.z)
       textMesh.scale.set(0.02, 0.02, 0.02)
       textMesh.rotateY(Three.MathUtils.degToRad(90))
-  
+
+      textMesh.quaternion.copy(this.camera.quaternion);
+
       this.label = textMesh
     }
   }
@@ -137,6 +140,10 @@ class Soldier {
 
   getObject() {
     return this.object;
+  }
+
+  getLabel() {
+    return this.label;
   }
 
   receiveDamage(damage) {
