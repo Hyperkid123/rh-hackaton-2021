@@ -152,6 +152,11 @@ class Soldier {
     this.scene.remove(this.label)
     this.createLabel()
     this.scene.add(this.label)
+
+    if(hp <= 0) {
+      this.scene.remove(this.label);
+      this.scene.remove(this.ringMesh);
+    }
   }
 }
 
