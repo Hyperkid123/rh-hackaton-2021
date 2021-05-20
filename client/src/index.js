@@ -68,6 +68,8 @@ socket.on('game-over', (deadUsers) => {
       setAttribute('lost', 'hidden', false)
       setAttribute('lost', 'className', 'overlay')
       setAttribute('death-container', 'className', 'death-background')
+      const audio = new Audio('/build/assets/sounds/you-died.mp3')
+      audio.play()
     } else {
       setAttribute('won', 'hidden', false)
       setAttribute('won', 'className', 'overlay')

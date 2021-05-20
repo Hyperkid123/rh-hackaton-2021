@@ -49,9 +49,9 @@ let army1 = new Array(1).fill().map((_, index) => ({
   },
   attributes: {
     damage: 1,
-    health: 10,
-    speed: 5,
-    remainingSpeed: 5,
+    health: 1,
+    speed: 55,
+    remainingSpeed: 55,
     isDead: false,
   },
   isSelected: false
@@ -64,9 +64,9 @@ let army2 = new Array(1).fill().map((_, index) => ({
   },
   attributes: {
     damage: 1,
-    health: 10,
-    speed: 5,
-    remainingSpeed: 5,
+    health: 1,
+    speed: 55,
+    remainingSpeed: 55,
     isDead: false,
   },
   isSelected: false
