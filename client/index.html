@@ -145,13 +145,24 @@
       bottom: 0;
     }
     #connect-form {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      color: wheat;
+      background-image: url(/build/assets/images/splash-screen-bg.png);
+      background-size: cover;
+    }
+    #connect-form > .form-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.92);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      width: 100vw;
-      height: 100vh;
-      color: wheat;
     }
     .player-name {
       width: 50vw;
@@ -248,12 +259,14 @@
     </div>
   </div>
   <div id="connect-form">
-    <h1>Welcome to the royal rumble!</h1>
-    <div>
-      <input placeholder="Choose your name" class="player-name" type="text" autocomplete="false" name="name" id="player-name" />
-    </div>
-    <div>
-      <button class="start-btn" id="connect" >Connect</button>
+    <div class="form-layer">
+      <h1>Welcome to the royal rumble!</h1>
+      <div>
+        <input placeholder="Choose your name" class="player-name" type="text" autocomplete="false" name="name" id="player-name" />
+      </div>
+      <div>
+        <button class="start-btn" id="connect" >Connect</button>
+      </div>
     </div>
   </div>
 </body>
